@@ -361,3 +361,17 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local standalone release package (includes the Whisper model)
+dist/
+/tmp
+
+# Local AI-assistant and verification notes
+/.codex/
+/.github/agents/
+/.github/copilot-instructions.md
+/AGENTS.md
+/BUILD-REPORT-STANDALONE.md
+/CLAUDE.md
+/ai-code-context.md
+/ai-codebase.md

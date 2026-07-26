@@ -64,6 +64,7 @@ namespace VAICOM
                         { "Approach Check In" ,         "wMsgLeaderCheckingIn"                  },
                         { "Expect On Time" ,            "wMsgLeaderInboundMarshallRespond"      },
                         { "Meatball" ,                  "wMsgLeaderBall"                        },
+                        { "Rearm" ,                     "requestrearming"                       },
 
                         { "Hornet Ball" ,              "wMsgLeaderHornetBall"                  },
                         { "Tomcat Ball" ,              "wMsgLeaderHornetBall"                  },

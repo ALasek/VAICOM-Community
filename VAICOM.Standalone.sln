@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VAICOM.Standalone", "VAICOM.Standalone\VAICOM.Standalone.csproj", "{AEAB34A7-66E3-4B62-A97D-0DB0B1BC8184}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VAICOM.Standalone.Speech", "VAICOM.Standalone.Speech\VAICOM.Standalone.Speech.csproj", "{5C44675A-2D68-4D90-BC99-8CED9D71BE49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VAICOM.Standalone.Tests", "VAICOM.Standalone.Tests\VAICOM.Standalone.Tests.csproj", "{62246EB1-10BB-4C9A-A7FA-F87CA15345E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AEAB34A7-66E3-4B62-A97D-0DB0B1BC8184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEAB34A7-66E3-4B62-A97D-0DB0B1BC8184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEAB34A7-66E3-4B62-A97D-0DB0B1BC8184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEAB34A7-66E3-4B62-A97D-0DB0B1BC8184}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C44675A-2D68-4D90-BC99-8CED9D71BE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C44675A-2D68-4D90-BC99-8CED9D71BE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C44675A-2D68-4D90-BC99-8CED9D71BE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C44675A-2D68-4D90-BC99-8CED9D71BE49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62246EB1-10BB-4C9A-A7FA-F87CA15345E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62246EB1-10BB-4C9A-A7FA-F87CA15345E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62246EB1-10BB-4C9A-A7FA-F87CA15345E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62246EB1-10BB-4C9A-A7FA-F87CA15345E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

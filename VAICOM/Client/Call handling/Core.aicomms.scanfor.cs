@@ -29,7 +29,11 @@ namespace VAICOM
 
                         if (category.Equals("command") && Regex.IsMatch(searchinput, @"^\s*gunner\b", RegexOptions.IgnoreCase))
                         {
-                            searchinput = Regex.Replace(searchinput, @"^\s*gunner[\s,]*", "george ", RegexOptions.IgnoreCase);
+                            string crewName = State.currentmodule != null
+                                && State.currentmodule.Id.Equals("Mi-24P", System.StringComparison.OrdinalIgnoreCase)
+                                ? "petrovich "
+                                : "george ";
+                            searchinput = Regex.Replace(searchinput, @"^\s*gunner[\s,]*", crewName, RegexOptions.IgnoreCase);
                         }
 
                         //Log.Write("scanning "+ cat +" search input = " + searchinput, colors.Text);
@@ -49,6 +53,32 @@ namespace VAICOM
                                 else
                                 {
                                     localresults.Add(set.Key.Replace("*", ""), set.Value);
+                                }
+                            }
+                        }
+
+                        if (localresults.Count == 0)
+                        {
+                            bool standalone = false;
+                            try
+                            {
+                                standalone = State.Proxy.IsStandalone;
+                            }
+                            catch
+                            {
+                            }
+
+                            if (standalone)
+                            {
+                                string recoveredAlias = State.Proxy.RecoverAlias(category, searchinput);
+                                foreach (KeyValuePair<string, string> set in Aliases.inputscancats[category])
+                                {
+                                    string alias = set.Key.Replace("*", "");
+                                    if (alias.Equals(recoveredAlias, System.StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        localresults.Add(alias, set.Value);
+                                        break;
+                                    }
                                 }
                             }
                         }

@@ -1,3 +1,14 @@
+# VAICOM Whisper Standalone
+
+This branch replaces VoiceAttack with a fully local speech-recognition host while retaining VAICOM Community's original DCS integration, command database, aliases, radio routing, and configuration UI. It uses constrained Vosk by default with optional Whisper fallback, and adds persistent microphone selection, keyboard/DirectInput TX1 and TX2 binding capture, and a standalone `Ctrl+Alt+C` global configuration shortcut.
+
+- [Standalone setup and operation](STANDALONE.md)
+- Build a local release with `./build-standalone.ps1`; the ignored package is written to `dist/VAICOM-Whisper-Standalone`.
+- The implementation is based on VAICOM Community Edition and retains its upstream license and attribution.
+
+The remainder of this page is the upstream VAICOM Community overview.
+
+---
 
 ![Vaicom GitHub Banner](https://github.com/user-attachments/assets/f7522f44-efb5-427e-b99f-868a09429806)
 

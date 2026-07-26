@@ -23,17 +23,6 @@ namespace VAICOM.Extensions.RIO
 
     public class CommandInfo : BaseCommandInfo
     {
-        public int uniqueid;
-        public string name;
-        public string displayname;
-        public int eventnumber;
-        public bool enabled;
-
-        public CommandInfo()
-        {
-            eventnumber = 4000;
-            enabled = false;
-        }
     }
 
     public static partial class Recipients

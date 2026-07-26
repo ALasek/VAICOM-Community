@@ -124,11 +124,15 @@ namespace VAICOM
                                 bool isGeorgeCommand = State.currentcommand != null
                                     && !string.IsNullOrEmpty(State.currentcommand.dcsid)
                                     && State.currentcommand.dcsid.StartsWith("wMsgGeorge", StringComparison.OrdinalIgnoreCase);
+                                bool isPetrovichCommand = State.currentcommand != null
+                                    && !string.IsNullOrEmpty(State.currentcommand.dcsid)
+                                    && State.currentcommand.dcsid.StartsWith("wMsgPetrovich", StringComparison.OrdinalIgnoreCase);
 
                                 if (!State.currentrecipientclass.Equals(Recipientclasses.Crew)
                                     && !State.currentcommand.isMenu()
                                     && !State.currentcommand.isOptions()
-                                    && !isGeorgeCommand)
+                                    && !isGeorgeCommand
+                                    && !isPetrovichCommand)
                                 {
                                     Log.Write("ICS HOT MIC: Use Push-To-Talk TX nodes to transmit radio messages.", Colors.Warning);
                                     if (State.activeconfig.UIaddhints)
@@ -159,6 +163,120 @@ namespace VAICOM
 
                     constructGeorge();
                     return true;
+                }
+
+                public static bool ProcessIfPetrovich()
+                {
+                    if (!State.currentcommand.dcsid.StartsWith("wMsgPetrovich", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+
+                    if (State.currentmodule == null || !State.currentmodule.Id.Equals("Mi-24P", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log.Write("Petrovich AI commands are only available in Mi-24P.", Colors.Warning);
+                        return false;
+                    }
+
+                    ConstructPetrovich();
+                    return true;
+                }
+
+                public static void ConstructPetrovich()
+                {
+                    State.currentmessage.type = Messagetypes.DeviceControl;
+                    State.currentmessage.extsequence = new List<Extensions.RIO.DeviceAction>();
+
+                    if (State.activeconfig.RIO_Messages && !State.activeconfig.RIO_Hints_Only)
+                    {
+                        State.currentmessage.dspmsg = "VAICOM: PETROVICH | " + Database.Labels.aicommands[State.currentkey["command"]];
+                        State.currentmessage.msgdur = 3;
+                    }
+
+                    switch (State.currentcommand.dcsid)
+                    {
+                        case "wMsgPetrovichWeaponsOn":
+                            AddPetrovichButton(3008);
+                            break;
+                        case "wMsgPetrovichSearchBoresight":
+                        case "wMsgPetrovichFire":
+                            AddPetrovichButton(3015);
+                            break;
+                        case "wMsgPetrovichSearchForward":
+                            AddPetrovichLongButton(3015);
+                            break;
+                        case "wMsgPetrovichSearchPilotLos":
+                        case "wMsgPetrovichTargetPrevious":
+                            AddPetrovichButton(3004);
+                            break;
+                        case "wMsgPetrovichClearSearch":
+                        case "wMsgPetrovichTargetNext":
+                            AddPetrovichButton(3005);
+                            break;
+                        case "wMsgPetrovichTargetingToggle":
+                            AddPetrovichLongButton(3002);
+                            break;
+                        case "wMsgPetrovichCycleMissile":
+                            AddPetrovichButton(3019);
+                            break;
+                        case "wMsgPetrovichRoeToggle":
+                            AddPetrovichLongButton(3004);
+                            break;
+                        case "wMsgPetrovichTargetSelect":
+                            AddPetrovichButton(3002);
+                            break;
+                        case "wMsgPetrovichCmInterval":
+                            AddMi24DevicePulse(9, 3008);
+                            break;
+                        case "wMsgPetrovichCmSeries":
+                            AddMi24DevicePulse(9, 3009);
+                            break;
+                        case "wMsgPetrovichCmLeft":
+                            AddMi24DevicePulse(9, 3010);
+                            break;
+                        case "wMsgPetrovichCmRight":
+                            AddMi24DevicePulse(9, 3011);
+                            break;
+                        case "wMsgPetrovichCmSet":
+                            AddMi24DevicePulse(9, 3012);
+                            break;
+                        case "wMsgPetrovichCmDispense":
+                            AddMi24DeviceButton(9, 3014);
+                            break;
+                    }
+                }
+
+                public static void AddPetrovichButton(int command)
+                {
+                    AddMi24DeviceButton(30, command);
+                }
+
+                public static void AddPetrovichLongButton(int command)
+                {
+                    AddMi24DeviceAction(30, command, 1.0, 700);
+                    AddMi24DeviceAction(30, command, 0.0);
+                }
+
+                public static void AddMi24DeviceButton(int device, int command)
+                {
+                    AddMi24DeviceAction(device, command, 1.0);
+                    AddMi24DeviceAction(device, command, 0.0);
+                }
+
+                public static void AddMi24DevicePulse(int device, int command)
+                {
+                    AddMi24DeviceAction(device, command, 1.0);
+                }
+
+                public static void AddMi24DeviceAction(int device, int command, double value, int delayMs = 0)
+                {
+                    State.currentmessage.extsequence.Add(new Extensions.RIO.DeviceAction
+                    {
+                        device = device,
+                        command = command,
+                        value = value,
+                        delayMs = delayMs
+                    });
                 }
 
                 public static void constructGeorge()
@@ -992,6 +1110,12 @@ namespace VAICOM
 
                         // SPECIAL: CONSTRUCT MESSAGE FOR GEORGE
                         if (!ProcessIfGeorge())
+                        {
+                            return;
+                        }
+
+                        // SPECIAL: CONSTRUCT MESSAGE FOR PETROVICH
+                        if (!ProcessIfPetrovich())
                         {
                             return;
                         }

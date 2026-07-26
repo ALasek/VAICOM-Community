@@ -28,7 +28,8 @@ namespace VAICOM
 
             public static void OpenConfiguration(dynamic vaProxy, bool resetwindow)
             {
-                if (!State.configwindowopen)
+                bool windowThreadAlive = State.configwindowthread != null && State.configwindowthread.IsAlive;
+                if (!State.configwindowopen || (State.configurationwindow == null && !windowThreadAlive))
                 {
                     try
                     {
@@ -61,12 +62,24 @@ namespace VAICOM
                 }
                 else
                 {
-                    if (resetwindow && State.configurationwindow != null)
+                    if (State.configurationwindow != null)
                     {
                         State.configurationwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
                         {
-                            State.configurationwindow.Left = 20;
-                            State.configurationwindow.Top = 20;
+                            if (resetwindow)
+                            {
+                                State.configurationwindow.Left = 20;
+                                State.configurationwindow.Top = 20;
+                            }
+                            if (State.configurationwindow.WindowState == System.Windows.WindowState.Minimized)
+                            {
+                                State.configurationwindow.WindowState = System.Windows.WindowState.Normal;
+                            }
+                            State.configurationwindow.Show();
+                            State.configurationwindow.Activate();
+                            State.configurationwindow.Topmost = true;
+                            State.configurationwindow.Topmost = false;
+                            State.configurationwindow.Focus();
                         });
                     }
                 }

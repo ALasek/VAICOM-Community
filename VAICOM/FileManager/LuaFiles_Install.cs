@@ -38,6 +38,52 @@ namespace VAICOM
                     }
                 }
 
+                internal static string PreserveDcsOriginal(string path, string fallback, bool restore, out bool originallyMissing)
+                {
+                    string backupPath = path + ".vaicom-standalone.original";
+                    string missingPath = path + ".vaicom-standalone.missing";
+
+                    if (!restore)
+                    {
+                        if (File.Exists(path))
+                        {
+                            if (!File.Exists(backupPath) && !File.Exists(missingPath))
+                            {
+                                File.Copy(path, backupPath, true);
+                            }
+                        }
+                        else if (!File.Exists(backupPath) && !File.Exists(missingPath))
+                        {
+                            File.WriteAllText(missingPath, string.Empty);
+                        }
+                    }
+
+                    originallyMissing = File.Exists(missingPath) && !File.Exists(backupPath);
+                    return File.Exists(backupPath) ? File.ReadAllText(backupPath) : fallback;
+                }
+
+                internal static bool RestorePreservedDcsOriginal(string path)
+                {
+                    string backupPath = path + ".vaicom-standalone.original";
+                    string missingPath = path + ".vaicom-standalone.missing";
+                    if (File.Exists(backupPath))
+                    {
+                        File.Copy(backupPath, path, true);
+                        return true;
+                    }
+
+                    if (File.Exists(missingPath))
+                    {
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        return true;
+                    }
+
+                    return false;
+                }
+
                 private static void EnsureIcaoOverridesFile(string savedGamesRoot, string dcsVersionFolder, bool forcequiet)
                 {
                     try
@@ -339,6 +385,34 @@ namespace VAICOM
 
                                         path = basepath + "\\" + thisfile.filename;
 
+                                        string original = thisfile.orig;
+                                        string originalLegacy = thisfile.orig_legacy;
+                                        if (thisfile.root)
+                                        {
+                                            original = PreserveDcsOriginal(path, original, restore, out bool originallyMissing);
+                                            originalLegacy = original;
+                                            if (restore && (RestorePreservedDcsOriginal(path) || originallyMissing))
+                                            {
+                                                continue;
+                                            }
+
+                                            if (thisfile.AIRIO)
+                                            {
+                                                bool isF14MiniWheel =
+                                                    thisfile.installfolder.Equals("Mods\\aircraft\\F14\\Cockpit\\Scripts\\JesterAI", StringComparison.OrdinalIgnoreCase)
+                                                    && (thisfile.filename.Equals("JesterAI_Page.lua", StringComparison.OrdinalIgnoreCase)
+                                                        || thisfile.filename.Equals("init.lua", StringComparison.OrdinalIgnoreCase));
+                                                bool featureEnabled = State.dll_installed_rio
+                                                    && (isF14MiniWheel
+                                                        ? State.activeconfig.RIO_MiniWheel_Enabled
+                                                        : State.activeconfig.RIO_Enabled);
+                                                if (!featureEnabled && RestorePreservedDcsOriginal(path))
+                                                {
+                                                    continue;
+                                                }
+                                            }
+                                        }
+
                                         // normal file (i.e. not export.lua)
 
                                         if (!thisfile.filename.ToLower().Equals("export.lua"))
@@ -364,9 +438,9 @@ namespace VAICOM
 
                                                 string writestring = "";
 
-                                                string effectiveOrig = uselegacy && !string.IsNullOrEmpty(thisfile.orig_legacy)
-                                                    ? thisfile.orig_legacy
-                                                    : thisfile.orig;
+                                                string effectiveOrig = uselegacy && !string.IsNullOrEmpty(originalLegacy)
+                                                    ? originalLegacy
+                                                    : original;
                                                 string effectiveSource = uselegacy && !string.IsNullOrEmpty(thisfile.source_legacy)
                                                     ? thisfile.source_legacy
                                                     : thisfile.source;
@@ -454,7 +528,7 @@ namespace VAICOM
                                                 {
                                                     if (uselegacy)
                                                     {
-                                                        writestring = thisfile.orig_legacy;
+                                                        writestring = originalLegacy;
 
                                                         if (!restore)
                                                         {
@@ -463,7 +537,7 @@ namespace VAICOM
                                                     }
                                                     else // for openbeta
                                                     {
-                                                        writestring = thisfile.orig;
+                                                        writestring = original;
 
                                                         if (!restore)
                                                         {
@@ -478,11 +552,11 @@ namespace VAICOM
                                                     {
                                                         if (uselegacy)
                                                         {
-                                                            writestring = thisfile.orig_legacy;
+                                                            writestring = originalLegacy;
                                                         }
                                                         else
                                                         {
-                                                            writestring = thisfile.orig;
+                                                            writestring = original;
                                                         }
                                                     }
                                                     else // not restore
@@ -502,11 +576,11 @@ namespace VAICOM
                                                         {
                                                             if (uselegacy)
                                                             {
-                                                                writestring = thisfile.orig_legacy + "\n" + thisfile.source_legacy;
+                                                                writestring = originalLegacy + "\n" + thisfile.source_legacy;
                                                             }
                                                             else
                                                             {
-                                                                writestring = thisfile.orig + "\n" + thisfile.source;
+                                                                writestring = original + "\n" + thisfile.source;
                                                             }
                                                         }
                                                     }

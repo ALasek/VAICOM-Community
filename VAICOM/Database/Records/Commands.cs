@@ -487,6 +487,27 @@ namespace VAICOM
             { "georgenextmsl",                new Command { uniqueid = 23077, category = CommandCategories.AH64D_GeorgeAI, eventnumber = 4000, dcsid = "wMsgGeorgeNextMSL", displayname = Labels.aicommands["georgenextmsl"] } },
             { "wMsgGeorgeCmndsMaximum",       new Command { uniqueid = 23079, category = CommandCategories.AH64D_GeorgeAI, eventnumber = 4000, dcsid = "wMsgGeorgeCmndsMaximum" } },
 
+            // Petrovich AI gunner device-control commands (Mi-24P)
+            { "wMsgPetrovichCmndsNull",       new Command { uniqueid = 23080, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmndsNull" } },
+            { "petrovichweaponson",           new Command { uniqueid = 23081, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichWeaponsOn", displayname = Labels.aicommands["petrovichweaponson"] } },
+            { "petrovichsearchboresight",     new Command { uniqueid = 23082, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichSearchBoresight", displayname = Labels.aicommands["petrovichsearchboresight"] } },
+            { "petrovichsearchforward",       new Command { uniqueid = 23083, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichSearchForward", displayname = Labels.aicommands["petrovichsearchforward"] } },
+            { "petrovichsearchpilotlos",      new Command { uniqueid = 23084, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichSearchPilotLos", displayname = Labels.aicommands["petrovichsearchpilotlos"] } },
+            { "petrovichclearsearch",         new Command { uniqueid = 23085, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichClearSearch", displayname = Labels.aicommands["petrovichclearsearch"] } },
+            { "petrovichtargetingtoggle",     new Command { uniqueid = 23086, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichTargetingToggle", displayname = Labels.aicommands["petrovichtargetingtoggle"] } },
+            { "petrovichcyclemissile",        new Command { uniqueid = 23087, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCycleMissile", displayname = Labels.aicommands["petrovichcyclemissile"] } },
+            { "petrovichfire",                new Command { uniqueid = 23088, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichFire", displayname = Labels.aicommands["petrovichfire"] } },
+            { "petrovichroetoggle",           new Command { uniqueid = 23089, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichRoeToggle", displayname = Labels.aicommands["petrovichroetoggle"] } },
+            { "petrovichtargetprevious",      new Command { uniqueid = 23090, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichTargetPrevious", displayname = Labels.aicommands["petrovichtargetprevious"] } },
+            { "petrovichtargetnext",          new Command { uniqueid = 23091, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichTargetNext", displayname = Labels.aicommands["petrovichtargetnext"] } },
+            { "petrovichtargetselect",        new Command { uniqueid = 23092, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichTargetSelect", displayname = Labels.aicommands["petrovichtargetselect"] } },
+            { "petrovichcminterval",          new Command { uniqueid = 23093, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmInterval", displayname = Labels.aicommands["petrovichcminterval"] } },
+            { "petrovichcmseries",            new Command { uniqueid = 23094, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmSeries", displayname = Labels.aicommands["petrovichcmseries"] } },
+            { "petrovichcmleft",              new Command { uniqueid = 23095, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmLeft", displayname = Labels.aicommands["petrovichcmleft"] } },
+            { "petrovichcmright",             new Command { uniqueid = 23096, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmRight", displayname = Labels.aicommands["petrovichcmright"] } },
+            { "petrovichcmset",               new Command { uniqueid = 23097, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmSet", displayname = Labels.aicommands["petrovichcmset"] } },
+            { "petrovichcmdispense",          new Command { uniqueid = 23098, category = CommandCategories.MI24P_PetrovichAI, eventnumber = 4000, dcsid = "wMsgPetrovichCmDispense", displayname = Labels.aicommands["petrovichcmdispense"] } },
+
             { "wMsgSpecialCmndsMaximum",       new Command { uniqueid = 23099, category = CommandCategories.special, eventnumber = 4000, dcsid = "wMsgSpecialCmndsMaximum" } },
 
             // AOCS commands 23100

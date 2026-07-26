@@ -525,13 +525,26 @@ namespace VAICOM
                 try
                 {
                     State.activeconfig.RIO_Enabled = false;
+                    State.activeconfig.RIO_MiniWheel_Enabled = false;
 
-                    if (!State.datawasreset)
+                    bool installDcsFiles = true;
+                    try
+                    {
+                        installDcsFiles = !vaProxy.IsStandalone || vaProxy.InstallDcsFiles;
+                    }
+                    catch
+                    {
+                    }
+
+                    if (installDcsFiles && !State.datawasreset)
                     {
                         FileHandler.Lua.LuaFiles_Install(false, true); // resets F14 lua to normal (quiet)
                     }
 
-                    FileHandler.Lua.LuaFiles_Install_Kneeboard(true, true);
+                    if (installDcsFiles)
+                    {
+                        FileHandler.Lua.LuaFiles_Install_Kneeboard(true, true);
+                    }
 
                     UI.Timers.UI_Timer_Stop();
                     Beacon.Beacon_TimerStop();

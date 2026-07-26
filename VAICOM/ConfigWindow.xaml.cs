@@ -48,6 +48,7 @@ namespace VAICOM
             {
                 this.useDarkModeOverride = useDarkModeOverride;
                 InitializeComponent();
+                InitializeStandaloneHostTab();
 
                 this.ResizeMode = ResizeMode.CanMinimize;
                 this.WindowStyle = WindowStyle.SingleBorderWindow;

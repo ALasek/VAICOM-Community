@@ -460,6 +460,7 @@ namespace VAICOM
                 {
                     bool txLinkActive = State.activeconfig.MP_UseTXLink
                         && !(State.activeconfig.MP_TXLink_MPOnly && !State.currentstate.multiplayer);
+                    bool closeMenusOnRelease = ShouldCloseMenusOnPttRelease(IsStandaloneHost(), txLinkActive);
 
                     if (keypress)
                     {
@@ -470,14 +471,14 @@ namespace VAICOM
                     }
                     else
                     {
-                        if (State.showingoptions && !txLinkActive)
+                        if (State.showingoptions && closeMenusOnRelease)
                         {
 
                             DcsClient.SendCmdSequence(DcsClient.iCommandsequences.closemenu, false);
                             State.showingoptions = false;
                         }
 
-                        if (Extensions.RIO.helper.showingjestermenu && !txLinkActive)
+                        if (Extensions.RIO.helper.showingjestermenu && closeMenusOnRelease)
                         {
                             Extensions.RIO.helper.ShowWheel(false);
                             Extensions.RIO.helper.showingjestermenu = false;
@@ -487,6 +488,23 @@ namespace VAICOM
                 }
                 catch
                 {
+                }
+            }
+
+            public static bool ShouldCloseMenusOnPttRelease(bool standaloneHost, bool txLinkActive)
+            {
+                return !standaloneHost && !txLinkActive;
+            }
+
+            private static bool IsStandaloneHost()
+            {
+                try
+                {
+                    return State.Proxy != null && State.Proxy.IsStandalone;
+                }
+                catch
+                {
+                    return false;
                 }
             }
 

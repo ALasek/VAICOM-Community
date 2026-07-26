@@ -437,9 +437,63 @@ namespace VAICOM
                 vaProxy.State.SetListeningEnabled(State.activeconfig.ReleaseHot);
             }
 
+            private static bool IsStandaloneHost(dynamic vaProxy)
+            {
+                try
+                {
+                    return vaProxy.IsStandalone;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            private static bool ShouldInstallDcsFiles(dynamic vaProxy)
+            {
+                try
+                {
+                    return !IsStandaloneHost(vaProxy) || vaProxy.InstallDcsFiles;
+                }
+                catch
+                {
+                    return true;
+                }
+            }
+
+            private static void ApplyStandaloneSettings(dynamic vaProxy)
+            {
+                if (!IsStandaloneHost(vaProxy))
+                {
+                    return;
+                }
+
+                State.activeconfig.AllowAddCommands = true;
+                State.activeconfig.Kneeboard_Enabled = false;
+
+                try
+                {
+                    string dcsInstallPath = vaProxy.DcsInstallPath;
+                    if (!string.IsNullOrWhiteSpace(dcsInstallPath))
+                    {
+                        State.activeconfig.UseCustomFolders = true;
+                        State.activeconfig.DCSfoldername1 = dcsInstallPath;
+                        State.activeconfig.Custom_Path_Setting1 = 0;
+                        State.activeconfig.Custom_Path_Setting2 = 0;
+                        State.activeconfig.CustomFoldersOBFlag = false;
+                    }
+                }
+                catch
+                {
+                }
+
+                Settings.ConfigFile.WriteConfigToFile(true);
+            }
+
             public static void Initialize(dynamic vaProxy)
             {
                 State.startup = true;
+                bool standaloneHost = IsStandaloneHost(vaProxy);
 
                 try
                 {
@@ -448,18 +502,25 @@ namespace VAICOM
                     ResetProcessValues(vaProxy);
 
                     FileHandler.Root.CheckSubFolders();
-                    FileHandler.Root.ExtractCompagnionApp();
-                    FileHandler.Root.ExtractNoLoadContext();
+                    if (!standaloneHost)
+                    {
+                        FileHandler.Root.ExtractCompagnionApp();
+                        FileHandler.Root.ExtractNoLoadContext();
+                    }
 
                     Log.Write("VAICOM Community Edition for DCS World.", Colors.System);
                     Log.Write("Press LCtrl+LAlt+C to open Vaicom UI", Colors.System);
                     Log.Write("Initializing..", Colors.System);
 
                     ResetConfig(vaProxy);
+                    ApplyStandaloneSettings(vaProxy);
 
                     Log.Reset();
 
-                    CheckVAVersion(vaProxy);
+                    if (!standaloneHost)
+                    {
+                        CheckVAVersion(vaProxy);
+                    }
                     GetAssemblies(vaProxy);
                 }
                 catch
@@ -473,14 +534,23 @@ namespace VAICOM
                 {
 
                     FixFiles(vaProxy);
-                    CheckUpdates(vaProxy);
+                    if (!standaloneHost)
+                    {
+                        CheckUpdates(vaProxy);
+                    }
                     LogVersionData(vaProxy);
                     ResetStateValues(vaProxy);
                     Processor.InitTTSPlaybackStream();
                     ResetPTTConfig(vaProxy);
-                    InstallLuaFiles(vaProxy);
-                    FileHandler.Root.CheckProfile(false);
-                    FileHandler.Root.CheckWSOProfile(true);  // WSO (always refresh profile on startup)
+                    if (ShouldInstallDcsFiles(vaProxy))
+                    {
+                        InstallLuaFiles(vaProxy);
+                    }
+                    if (!standaloneHost)
+                    {
+                        FileHandler.Root.CheckProfile(false);
+                        FileHandler.Root.CheckWSOProfile(true);
+                    }
 
                     // Call MergeRIO
                     MergeRIO(vaProxy);

@@ -7,7 +7,11 @@
     <Description>Interactive Voice Control for DCS World</Description>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
     <FileVersion>0.0.0.0</FileVersion>
-    <PreBuildEvent>TASKKILL /F /IM VoiceAttack.exe &gt;NUL 2&gt;&amp;1 &amp; TASKKILL /F /IM XDesProc.exe &gt;NUL 2&gt;&amp;1 &amp; EXIT /B 0</PreBuildEvent>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <PreBuildEvent Condition="'$(StandaloneBuild)' != 'true'">TASKKILL /F /IM VoiceAttack.exe &gt;NUL 2&gt;&amp;1 &amp; TASKKILL /F /IM XDesProc.exe &gt;NUL 2&gt;&amp;1 &amp; EXIT /B 0</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -55,6 +59,7 @@
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

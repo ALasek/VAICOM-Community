@@ -274,6 +274,12 @@ namespace VAICOM
                                 outputcommandstring = outputcommandstring + commandstrings[commandcat];
                             }
 
+                            // Petrovich AI
+                            if (cat.Equals("aicrew") && commandcat.Contains("MI24P_PetrovichAI"))
+                            {
+                                outputcommandstring = outputcommandstring + commandstrings[commandcat];
+                            }
+
                             // WSO
                             if (cat.Equals("WSO") && commandcat.Contains("WSO"))
                             {

@@ -723,6 +723,61 @@
                     </Grid>
                 </TabItem>
 
+                <TabItem x:Name="StandaloneHostPage" Header="Host" FontSize="10" Visibility="Collapsed">
+                    <Grid Background="{DynamicResource UiWindowBackgroundBrush}" Margin="18,14,18,12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                             <RowDefinition Height="25"/>
+                             <RowDefinition Height="25"/>
+                             <RowDefinition Height="32"/>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="STATUS"/>
+                        <TextBlock x:Name="HostStatusText" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Unavailable"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="DCS"/>
+                        <TextBlock x:Name="HostDcsText" Grid.Row="1" Grid.Column="1" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Not connected"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="ENGINE"/>
+                        <TextBlock x:Name="HostWhisperText" Grid.Row="1" Grid.Column="3" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Unavailable"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="ASR"/>
+                        <ComboBox x:Name="HostSpeechBackendComboBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="22" DisplayMemberPath="Name" SelectedValuePath="Id" SelectionChanged="HostSpeechBackendComboBox_SelectionChanged" Style="{StaticResource VaicomThemedComboBoxStyle}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="MIC"/>
+                        <ComboBox x:Name="HostMicrophoneComboBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Height="22" DisplayMemberPath="Name" SelectedValuePath="DeviceNumber" IsSynchronizedWithCurrentItem="False" SelectionChanged="HostMicrophoneComboBox_SelectionChanged" Style="{StaticResource VaicomThemedComboBoxStyle}"/>
+                        <Button Grid.Row="3" Grid.Column="3" Height="22" Margin="4,0,0,0" Content="REFRESH" FontSize="8" Click="RefreshStandaloneHostInputDevices" ToolTip="Refresh microphone and controller devices."/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="TX1"/>
+                        <TextBlock x:Name="HostTx1BindingText" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" FontSize="10" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Not assigned" TextTrimming="CharacterEllipsis" ToolTip="Configured keyboard or HOTAS binding."/>
+                        <TextBlock x:Name="HostTx1ConnectionText" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Disconnected"/>
+                        <StackPanel Grid.Row="4" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="HostBindTx1Button" Width="46" Height="22" Content="BIND" FontSize="8" Click="BeginStandaloneHostPttBinding" ToolTip="Bind TX1: press a keyboard key or HOTAS button."/>
+                            <Button x:Name="HostClearTx1Button" Width="46" Height="22" Margin="2,0,0,0" Content="CLEAR" FontSize="8" Click="ClearStandaloneHostPttBinding" ToolTip="Clear TX1 binding."/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="TX2"/>
+                        <TextBlock x:Name="HostTx2BindingText" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" FontSize="10" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Not assigned" TextTrimming="CharacterEllipsis" ToolTip="Configured keyboard or HOTAS binding."/>
+                        <TextBlock x:Name="HostTx2ConnectionText" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8" Foreground="{DynamicResource UiWindowForegroundBrush}" Text="Disconnected"/>
+                        <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="HostBindTx2Button" Width="46" Height="22" Content="BIND" FontSize="8" Click="BeginStandaloneHostPttBinding" ToolTip="Bind TX2: press a keyboard key or HOTAS button."/>
+                            <Button x:Name="HostClearTx2Button" Width="46" Height="22" Margin="2,0,0,0" Content="CLEAR" FontSize="8" Click="ClearStandaloneHostPttBinding" ToolTip="Clear TX2 binding."/>
+                        </StackPanel>
+
+                        <TextBlock x:Name="HostCaptureText" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" FontSize="11" Foreground="#FFEEB94E" TextWrapping="Wrap"/>
+                        <Button x:Name="HostCancelCaptureButton" Grid.Row="6" Grid.Column="3" Height="22" Content="CANCEL" FontSize="8" Visibility="Collapsed" Click="CancelStandaloneHostPttBinding"/>
+                        <TextBlock x:Name="HostErrorText" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" FontSize="10" Foreground="#FFFF7B7B" TextWrapping="Wrap"/>
+                    </Grid>
+                </TabItem>
+
             </TabControl>
         </Grid>
     </Border>

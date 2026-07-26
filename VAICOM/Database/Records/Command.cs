@@ -188,6 +188,9 @@ namespace VAICOM
                 // George AI extension
                 if (this.dcsid != null && this.dcsid.StartsWith("wMsgGeorge", StringComparison.OrdinalIgnoreCase)) { value = Recipientclasses.Crew; }
 
+                // Petrovich AI extension
+                if (this.dcsid != null && this.dcsid.StartsWith("wMsgPetrovich", StringComparison.OrdinalIgnoreCase)) { value = Recipientclasses.Crew; }
+
                 // WSO extension
                 if ((this.uniqueid >= Commands.Table["wMsgWSOCmndsNull"].uniqueid) & (this.uniqueid <= Commands.Table["wMsgWSOCmndsMaximum"].uniqueid)) { value = Recipientclasses.WSO; }
 
@@ -224,10 +227,15 @@ namespace VAICOM
                 return this.dcsid != null && this.dcsid.StartsWith("wMsgGeorge", StringComparison.OrdinalIgnoreCase);
             }
 
+            public bool isPetrovich()
+            {
+                return this.dcsid != null && this.dcsid.StartsWith("wMsgPetrovich", StringComparison.OrdinalIgnoreCase);
+            }
+
             public bool isVoid()
             {
 
-                return (this.isSpecial() & !this.isOptions() & !this.isSelect() & !this.isMenu() & !this.isState() & !this.isRIO() & !this.isWSO() & !this.isGeorge());
+                return (this.isSpecial() & !this.isOptions() & !this.isSelect() & !this.isMenu() & !this.isState() & !this.isRIO() & !this.isWSO() & !this.isGeorge() & !this.isPetrovich());
 
             }
 
@@ -287,6 +295,7 @@ namespace VAICOM
             RIO_misc,
             AI_pilot,
             AH64D_GeorgeAI,
+            MI24P_PetrovichAI,
             kneeboard,
             WSO,
             WSO_navigation,

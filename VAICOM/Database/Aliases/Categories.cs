@@ -461,6 +461,7 @@ namespace VAICOM
                 Func<CommandCategories, string> getCommandSection = category =>
                 {
                     if (category == CommandCategories.AH64D_GeorgeAI) { return "AI Crew | AH-64D Apache"; }
+                    if (category == CommandCategories.MI24P_PetrovichAI) { return "AI Crew | Mi-24P Hind"; }
                     if (category == CommandCategories.AI_pilot || category.ToString().StartsWith("RIO", StringComparison.OrdinalIgnoreCase)) { return "AI Crew | F-14 Tomcat"; }
                     if (category == CommandCategories.WSO || category.ToString().StartsWith("WSO", StringComparison.OrdinalIgnoreCase)) { return "AI Crew | F-4E Phantom II"; }
 
