@@ -1,133 +1,59 @@
-# VAICOM Whisper Standalone
+# VAICOM Standalone Speech
 
-This branch replaces VoiceAttack with a fully local speech-recognition host while retaining VAICOM Community's original DCS integration, command database, aliases, radio routing, and configuration UI. It uses constrained Vosk by default with optional Whisper fallback, and adds persistent microphone selection, keyboard/DirectInput TX1 and TX2 binding capture, and a standalone `Ctrl+Alt+C` global configuration shortcut.
+> [!IMPORTANT]
+> This is my personal, vibe-coded, experimental fork of [VAICOM Community](https://github.com/Penecruz/VAICOM-Community). It is not an official VAICOM release and is not maintained, supported, or endorsed by the upstream VAICOM Community team.
 
-- [Standalone setup and operation](STANDALONE.md)
-- Build a local release with `./build-standalone.ps1`; the ignored package is written to `dist/VAICOM-Whisper-Standalone`.
-- The implementation is based on VAICOM Community Edition and retains its upstream license and attribution.
+This fork lets VAICOM handle supported DCS radio commands without using VoiceAttack as its speech and push-to-talk host. It keeps VAICOM's existing DCS integration, command database, aliases, radio routing, and live game-state matching, while adding a standalone local speech host.
 
-The remainder of this page is the upstream VAICOM Community overview.
+The "vibe-coded" label is deliberate: this was built through iterative AI-assisted development and local testing. It has automated smoke tests and has been exercised in DCS, but it should still be treated as experimental software that modifies DCS integration files.
 
----
+## What this fork adds
 
-![Vaicom GitHub Banner](https://github.com/user-attachments/assets/f7522f44-efb5-427e-b99f-868a09429806)
+- Fully local speech recognition; audio and transcripts are not sent to Codex, OpenAI, or another cloud service.
+- Constrained Vosk recognition by default, optimized for VAICOM's short command phrases.
+- Optional local Whisper fallback.
+- Persistent microphone selection and recognition status in the VAICOM configuration window.
+- Global keyboard and DirectInput/HOTAS bindings for TX1 and TX2.
+- `Ctrl+Alt+C` to open the VAICOM configuration window while the standalone host is running.
+- Deterministic command cleanup and conservative fuzzy recovery for common transcription errors.
+- Voice-driven stock radio-menu traversal, selected campaign prompts, and a focused set of Mi-24P Petrovich gunner commands.
+- Backups of DCS files before the standalone host patches them.
 
+## Scope
 
-[![Downloads](https://img.shields.io/github/downloads/Penecruz/VAICOMPRO-Community/total?logo=GitHub)](https://github.com/Penecruz/VAICOMPRO-Community/releases/latest)
-[![Discord](https://img.shields.io/discord/736032844274728961?logo=Discord)](https://discord.gg/7c22BHNSCS)
-[![Latest Release](https://img.shields.io/github/v/release/Penecruz/VAICOMPRO-Community?logo=GitHub)](https://github.com/Penecruz/VAICOMPRO-Community/releases/latest)
+This replaces the VoiceAttack **host used by VAICOM**, not VoiceAttack as a general automation product. VAICOM's normal recipient, command, radio, module, and live-DCS-state logic remains authoritative.
 
-VAICOM Community Edition for DCS World
+Current limitations include:
 
-## Overview - Community Edition
+- Standalone voice PTT is implemented for TX1 and TX2. Additional transmit nodes remain future work.
+- VoiceAttack wildcard segment behavior is only approximated, so some frequency-tuning and AIRIO profile macros may need further work.
+- The optional in-cockpit VAICOM kneeboard extension is disabled to avoid its aircraft-file modifications and associated multiplayer integrity-check problems.
+- Recognition and DCS behavior still need broader testing across aircraft, missions, accents, microphones, and multiplayer environments.
 
-On 31 OCT 2022 Hollywood_315 open sourced his awesome AI communications software for DCS Word. VAICOMPRO has been the launch pad for VR flyers in DCS to create a
-immersive environment free from the constraints of keyboard or mouse-controlled radio menus.
+See [STANDALONE.md](STANDALONE.md) for the complete operating notes, command examples, recovery instructions, and current technical boundary.
 
-A group of community members have patched his work to make it compatible with DCS 2.8.XXXXX and later. This is a standalone installer that will replace your previous version of VAICOM. It will not work with DCS 2.7.XXXXX or erlier.
+## Build and run
 
-We now have VAICOM Community Edition running well with DCS 3.0.X.X and are looking where we can take it going forward with lots of new modules coming to DCS World.
-We continue to develop VAICOMPRO to keep it functioning with changes to DCS. That said, there will be issues from time to time. So please use the issues register here on GitHub to report them.
+This is currently a source-first experimental fork, not a polished installer release.
 
-Remember this is a community group, a group that donates their time to keep this awesome software alive. Be respectful and patient, we all have real jobs too. Join our Discord Server (link Below) and become part of our community.
+1. From Windows PowerShell in the repository root, run `./build-standalone.ps1`.
+2. The script restores and builds the .NET Framework 4.7.2 projects, downloads the local recognition models when needed, and creates `dist/VAICOM-Whisper-Standalone`.
+3. Run `Start-VAICOM.cmd` from that generated directory.
+4. In the **Host** tab, select a microphone and bind TX1 and TX2.
+5. Start DCS and leave the standalone host running for the session.
 
-## Important Information
+Start with [the detailed setup guide](STANDALONE.md) before using it against a DCS installation. Back up any DCS or Saved Games scripts you maintain manually.
 
-VAICOM Community is 100% free and includes all modules (Chatter, AIRIO, Kneeboard, Realistic ATC) that were available with the last paid release.
+## Upstream project and attribution
 
-Use of this software is at your risk, we accept no liability for stuffing up your Voice Attack installation, DCS World installation, Windows installation, or any other action.
+VAICOM and its DCS integration were created by the original VAICOM developers and are maintained by the VAICOM Community project. This fork would not exist without that work.
 
-The VAICOM Community Team
+- [VAICOM Community source and official project information](https://github.com/Penecruz/VAICOM-Community)
+- [VAICOM Community releases](https://github.com/Penecruz/VAICOMPRO-Community/releases/latest)
+- [VAICOM Community Discord](https://discord.gg/7c22BHNSCS)
 
-## Known Issues
+Use this fork's issue tracker for problems introduced by the standalone speech host. Do not ask the upstream maintainers to support these experimental changes.
 
-VAICOM Community 3.0.X.X is not designed to be backwards compatible with DCS 2.7.X If you wish to continue using VAICOMPRO for DCS 2.7, please use Hollywood_315's final release and not VAICOMPRO Community.
+## License
 
-VAICOM Community Edition will not pass the Integrity Check on Multiplayer Servers that require Pure Client Scripts unless the AIRIO and Kneeboard extensions are deactivated via the VAICOMPRO UI.
-This is because VAICOMPRO adds lines to some of DCS World's core LUA files to enable it to function. Multiplayer Server administrators must enable Pure Client Scripts as an option as it is off by default. Very few Servers require Pure Client Scripts. This is something that only ED can change.
-
-DiCE: DCS Integrated Countermeasure Editor creates many functionality issues with VAICOM Community, and it is recommended this be uninstalled before using VAICOM Community.
-
-Flashing Comms Menu after DCS World update is a known issue and can be resolved with a lua reset, closing DCS and voiceAttack then launching VoiceAttack again prior to launching DCS to generate DCS side files.
-
-## Installation Instructions
-
-#### NOTE: If this is a new VAICOM installation, you should follow the install instructions in the VAICOM manual found in the VAICOMPRO/Documentation folder.
-	
-#### To update from an older version of VAICOMPRO
-
-
-1. Ensure DCS is not Running
-
-2. Backup your current VoiceAttack profile by clicking "More Profile Actions" (button right of the edit in VoiceAttack) and exporting your profile to a known location (this avoids tears in the event of an issue).
-
-3. If you are using the MSI Installer, you will need to uninstall via the Windows process It will retain your config and profile settings (You will be propted if you try running the installer)
-
-4. If you are using the Zip file just unzip over the top of you existing VAICOMPRO folder in Program Files/ VoiceAttack /Apps folder
-
-5. Launch VoiceAttack and exit VoiceAttack (this allows VAICOMPRO to build the required DCS files).
-	
-6. Launch VoiceAttack and launch the VAICOM config menu (L CTRL+L ALT+C) Check that your settings have been retained and the DCS Path details are correct.
-
-7. Launch DCS and confirm 
-
-8. Join our Discord at https://discord.gg/7c22BHNSCS if you have any questions or issues with the install.
-
-## Installation Tutorial Videos
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/-bbQf6cU2EM/0.jpg)](https://www.youtube.com/watch?v=-bbQf6cU2EM)
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/NiP42guoKW0/0.jpg)](https://www.youtube.com/watch?v=NiP42guoKW0)
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/TJjd0Pvccmk/0.jpg)](https://www.youtube.com/watch?v=TJjd0Pvccmk)
-
-
-## Patch Notes
-
-
-This update adds more functionality for OpenKneeboard Out and fixes some errors in the previous version, it also introduces the FLT PLN Tab Stores Page to OpenKneeboard Out, that will list the stores loaded on the aircraft by station number in real time. It expands the FLT PLN Tab SA Map capabilities and update rate including the ability to bug a D-Link target and receive BRA and Bullseye information for the bugged unit. Lots of Fixes and backend refinements.
-
-New
-- Added F-4E WSO additional Ground commands.
-- Added OpenKneeboard connection notifier on the VAICOM PTT tab.
-- Added OKB Out tab to the VAICOM UI and moved related features from the Expansion tab.
-- Added OKB Out FLT PLN STORES page to show runtime aircraft stores.
-- Added SA MAP B/E marker support with D-Link asset bugging for B/E and BRA readout.
-- Added NAVLOG DIR TO and DEL step actions.
-- Added flight pilot list view for Single Player / Multiplayer in FLT PLN (WIP).
-- Added multiplayer-safe F-14 AIRIO handling for servers requiring pure client scripts (mini wheel unavailable in this mode).
-
-Improved
-- Improved OKB FLT PLN tab behavior and client display name detection.
-- Improved DTC import handling for F-16C in OKB Out FLT PLN.
-- Improved D-Link target labels and asset validation in OKB Out.
-- Improved DIR TO / DEL STP action robustness with armed-state handling and clearer row highlighting.
-- Improved Saved Games folder discovery for OKB flight plan files.
-- Improved logging and snapshot update efficiency to reduce unnecessary server-process updates (performance).
-- Improved Auto Browse behavior by decoupling DCS kneeboard and OKB Out settings.
-
-Fixed
-- Fixed Krasnodar-Pashkovsky airbase name truncation.
-- Fixed F-4E dialog visibility issue.
-- Fixed Execute external plugin OKB commands when auto-browse is disabled.
-- Fixed minor NAVLOG refresh loop caused by player callsign updates.
-- Fixed text selection/highlighting with stylus in OKB Out.
-- Fixed Jester Mini Wheel checkbox persistence (now remembers configuration).
-
-Known Issues
-
-- C-130J Select Tunes radio command will tune radio but not change AMU or CNI-MU display.
-- George AI the AH-64D M299_EMPTY racks if loaded with other missiles break direct weapon selection (still working a fix for this).
-
-## Community Team
-
-Pene, Special K, Sleighzy, D3adCy11nd3r, Folgers, Hornblower793, Liam8, MAXsenna, MisterOutofTime, Raskit, Hue Jass and stag1975
-
-## Patreon Donations
-
-If you want to donate a beer, visit the Official Vaicom Patreon.
-[Vaicom Patreon Site](https://patreon.com/PeneCruz?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
-
-
-#### Beta Team
-104th_Aeons, GSG-3|Turbine|202, DrChainsaw, Jaeger, Nicola, Padinn, SPAZ-505, tomeye, Virus, Bonz RexExGSR, LawnBoy, Scotia and MrAxen 
+The project remains under the upstream [MIT License](LICENCE.md). Existing copyright, license, and attribution notices are retained.
