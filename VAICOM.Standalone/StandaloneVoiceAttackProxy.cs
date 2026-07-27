@@ -165,7 +165,17 @@ namespace VAICOM.Standalone
             return string.Empty;
         }
 
-        private static bool IsRecoveryCandidateAvailable(KeyValuePair<string, string> candidate)
+        internal static bool IsRecoveryCandidateAvailable(KeyValuePair<string, string> candidate)
+        {
+            return IsCandidateAvailable(candidate, true);
+        }
+
+        internal static bool IsRecognitionCandidateAvailable(KeyValuePair<string, string> candidate)
+        {
+            return IsCandidateAvailable(candidate, false);
+        }
+
+        private static bool IsCandidateAvailable(KeyValuePair<string, string> candidate, bool filterCurrentRecipient)
         {
             if (!Commands.Table.TryGetValue(candidate.Value, out Command command))
             {
@@ -192,7 +202,7 @@ namespace VAICOM.Standalone
                 return false;
             }
 
-            if (!global::VAICOM.State.have["recipient"] || command.isSpecial())
+            if (!filterCurrentRecipient || !global::VAICOM.State.have["recipient"] || command.isSpecial())
             {
                 return true;
             }

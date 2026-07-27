@@ -169,6 +169,22 @@ namespace VAICOM.Standalone
             return false;
         }
 
+        public static bool LooksLikeProfileCommand(string transcript)
+        {
+            string normalized = SpeechGrammar.Normalize(DeterministicAliasMatcher.NormalizeTranscript(transcript));
+            return normalized.StartsWith("link tune ", StringComparison.Ordinal)
+                || normalized.StartsWith("radio tune ", StringComparison.Ordinal)
+                || normalized.StartsWith("select channel ", StringComparison.Ordinal)
+                || Regex.IsMatch(normalized, @"^select(?: am| fm)? (?:zero|one|two|three)(?: |$)")
+                || Regex.IsMatch(normalized, @"^(?:tacan|tac in|tack in|tay can) tune ")
+                || normalized.StartsWith("scan sector angels ", StringComparison.Ordinal)
+                || normalized.StartsWith("laser code ", StringComparison.Ordinal)
+                || normalized.StartsWith("map marker ", StringComparison.Ordinal)
+                || normalized.StartsWith("fly marker ", StringComparison.Ordinal)
+                || normalized.StartsWith("orbit marker ", StringComparison.Ordinal)
+                || normalized.StartsWith("track marker ", StringComparison.Ordinal);
+        }
+
         public static IEnumerable<string> GrammarPhrases()
         {
             yield return "chatter";

@@ -239,6 +239,7 @@ namespace VAICOM.Standalone.Tests
 
             AliasRecoveryResult recovered = DeterministicAliasMatcher.Match("command", "abort take of", aliases);
             Assert(recovered.Accepted && recovered.Value == "aborttakeoff", "Deterministic fuzzy recovery failed.");
+            Assert(recovered.RecoveredTranscript == "abort takeoff", "Recovered transcript reconstruction failed.");
 
             AliasRecoveryResult rejected = DeterministicAliasMatcher.Match("command", "weather report for tomorrow", aliases);
             Assert(!rejected.Accepted, "Unrelated transcript was accepted by fuzzy recovery.");
@@ -450,6 +451,17 @@ namespace VAICOM.Standalone.Tests
                         Console.WriteLine("Vosk profile command: " + profilePhrase + " -> " + result.Text);
                         Assert(StandaloneProfileCommandRouter.TryMatch(result.Text, out StandaloneProfileCommand ignored), "Vosk did not produce a routable profile command for: " + profilePhrase);
                     }
+                }
+
+                using (MemoryStream starterAudio = CreateSyntheticCommand("run starter"))
+                {
+                    result = await transcriber.TranscribeAsync(starterAudio, grammar).ConfigureAwait(false);
+                    Console.WriteLine("Vosk BF 109 command: run starter -> " + result.Text + " (" + result.Confidence.ToString("0.000") + ")");
+                    Assert(SpeechRecognizerRouter.TryResolve(result, out string resolvedStarter), "Vosk rejected the BF 109 starter alias.");
+                    Assert(
+                        global::VAICOM.Database.Aliases.inputscancats["command"].TryGetValue(resolvedStarter, out string starterCommand)
+                        && starterCommand == "runinertialstarter",
+                        "Vosk did not resolve 'run starter' to the inertial starter command: " + resolvedStarter);
                 }
             }
         }

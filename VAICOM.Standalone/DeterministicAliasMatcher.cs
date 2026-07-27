@@ -8,10 +8,18 @@ namespace VAICOM.Standalone
 {
     public sealed class AliasRecoveryResult
     {
-        internal AliasRecoveryResult(string alias, string value, int score, int runnerUpScore, int minimumScore, int requiredMargin)
+        internal AliasRecoveryResult(
+            string alias,
+            string value,
+            string recoveredTranscript,
+            int score,
+            int runnerUpScore,
+            int minimumScore,
+            int requiredMargin)
         {
             Alias = alias ?? string.Empty;
             Value = value ?? string.Empty;
+            RecoveredTranscript = recoveredTranscript ?? string.Empty;
             Score = score;
             RunnerUpScore = runnerUpScore;
             MinimumScore = minimumScore;
@@ -20,6 +28,7 @@ namespace VAICOM.Standalone
 
         public string Alias { get; }
         public string Value { get; }
+        public string RecoveredTranscript { get; }
         public int Score { get; }
         public int RunnerUpScore { get; }
         public int MinimumScore { get; }
@@ -85,8 +94,8 @@ namespace VAICOM.Standalone
                     continue;
                 }
 
-                int score = ScoreAlias(inputTokens, aliasTokens);
-                var scored = new ScoredAlias(alias, candidate.Value, score, compactLength);
+                AliasScore score = ScoreAlias(inputTokens, aliasTokens);
+                var scored = new ScoredAlias(alias, candidate.Value, score.Score, compactLength, score.Start, score.Length);
                 if (!bestByValue.TryGetValue(scored.Value, out ScoredAlias current)
                     || scored.Score > current.Score
                     || scored.Score == current.Score && scored.Alias.Length > current.Alias.Length)
@@ -108,9 +117,13 @@ namespace VAICOM.Standalone
 
             ScoredAlias best = ranked[0];
             int runnerUpScore = ranked.Length > 1 ? ranked[1].Score : 0;
+            string recoveredTranscript = string.Join(" ", inputTokens.Take(best.Start)
+                .Concat(Tokenize(best.Alias))
+                .Concat(inputTokens.Skip(best.Start + best.Length)));
             return new AliasRecoveryResult(
                 best.Alias,
                 best.Value,
+                recoveredTranscript,
                 best.Score,
                 runnerUpScore,
                 MinimumScore(category, best.CompactLength),
@@ -119,16 +132,18 @@ namespace VAICOM.Standalone
 
         private static AliasRecoveryResult EmptyResult(string category)
         {
-            return new AliasRecoveryResult(string.Empty, string.Empty, 0, 0, MinimumScore(category, 0), RequiredMargin(category));
+            return new AliasRecoveryResult(string.Empty, string.Empty, string.Empty, 0, 0, MinimumScore(category, 0), RequiredMargin(category));
         }
 
-        private static int ScoreAlias(string[] inputTokens, string[] aliasTokens)
+        private static AliasScore ScoreAlias(string[] inputTokens, string[] aliasTokens)
         {
             string alias = string.Join(" ", aliasTokens);
             string compactAlias = string.Concat(aliasTokens);
             int minimumWindow = Math.Max(1, aliasTokens.Length - 1);
             int maximumWindow = Math.Min(inputTokens.Length, aliasTokens.Length + 2);
             int best = 0;
+            int bestStart = 0;
+            int bestLength = inputTokens.Length;
 
             for (int length = minimumWindow; length <= maximumWindow; length++)
             {
@@ -137,11 +152,17 @@ namespace VAICOM.Standalone
                     string[] windowTokens = inputTokens.Skip(start).Take(length).ToArray();
                     int spacedScore = Fuzz.Ratio(string.Join(" ", windowTokens), alias);
                     int compactScore = Fuzz.Ratio(string.Concat(windowTokens), compactAlias);
-                    best = Math.Max(best, Math.Max(spacedScore, compactScore));
+                    int score = Math.Max(spacedScore, compactScore);
+                    if (score > best || score == best && Math.Abs(length - aliasTokens.Length) < Math.Abs(bestLength - aliasTokens.Length))
+                    {
+                        best = score;
+                        bestStart = start;
+                        bestLength = length;
+                    }
                 }
             }
 
-            return best;
+            return new AliasScore(best, bestStart, bestLength);
         }
 
         private static string[] Tokenize(string value)
@@ -165,18 +186,36 @@ namespace VAICOM.Standalone
 
         private sealed class ScoredAlias
         {
-            public ScoredAlias(string alias, string value, int score, int compactLength)
+            public ScoredAlias(string alias, string value, int score, int compactLength, int start, int length)
             {
                 Alias = alias;
                 Value = value ?? string.Empty;
                 Score = score;
                 CompactLength = compactLength;
+                Start = start;
+                Length = length;
             }
 
             public string Alias { get; }
             public string Value { get; }
             public int Score { get; }
             public int CompactLength { get; }
+            public int Start { get; }
+            public int Length { get; }
+        }
+
+        private sealed class AliasScore
+        {
+            public AliasScore(int score, int start, int length)
+            {
+                Score = score;
+                Start = start;
+                Length = length;
+            }
+
+            public int Score { get; }
+            public int Start { get; }
+            public int Length { get; }
         }
     }
 }

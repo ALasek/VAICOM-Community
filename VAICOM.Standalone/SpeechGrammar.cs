@@ -81,6 +81,54 @@ namespace VAICOM.Standalone
             }
         }
 
+        public static bool TryRecoverRecognition(string value, out string recovered)
+        {
+            recovered = string.Empty;
+            string normalized = Normalize(value);
+            if (string.IsNullOrWhiteSpace(normalized)
+                || normalized.IndexOf("[unk]", StringComparison.OrdinalIgnoreCase) >= 0
+                || StandaloneProfileCommandRouter.LooksLikeProfileCommand(normalized)
+                || !Aliases.inputscancats.TryGetValue("command", out Dictionary<string, string> commands))
+            {
+                return false;
+            }
+
+            AliasRecoveryResult result = DeterministicAliasMatcher.Match(
+                "command",
+                normalized,
+                commands,
+                StandaloneVoiceAttackProxy.IsRecognitionCandidateAvailable);
+            if (!result.Accepted)
+            {
+                return false;
+            }
+
+            recovered = result.RecoveredTranscript;
+            if (IsValidRecognition(recovered))
+            {
+                return true;
+            }
+
+            string[] words = recovered.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int index = 0; index < words.Length; index++)
+            {
+                if (words[index] != "to" && words[index] != "please")
+                {
+                    continue;
+                }
+
+                string withoutFiller = string.Join(" ", words.Where((word, wordIndex) => wordIndex != index));
+                if (IsValidRecognition(withoutFiller))
+                {
+                    recovered = withoutFiller;
+                    return true;
+                }
+            }
+
+            recovered = string.Empty;
+            return false;
+        }
+
         private static bool IsValidRecognitionSnapshot(string value)
         {
             string normalized = Normalize(value);

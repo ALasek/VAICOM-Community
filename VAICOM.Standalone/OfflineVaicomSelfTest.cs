@@ -37,9 +37,19 @@ namespace VAICOM.Standalone
             AssertMatch(proxy, "2 rejoin", "recipient", "wingman2");
             AssertMatch(proxy, "2 rejoin", "command", "joinup");
             AssertMatch(proxy, "request startup", "command", "requestenginesstart");
+            AssertMatch(proxy, "run starter", "command", "runinertialstarter");
             AssertMatch(proxy, "a board to take off", "command", "aborttakeoff");
             AssertMatch(proxy, "abort take of", "command", "aborttakeoff");
             AssertNoMatch(proxy, "weather report for tomorrow", "command");
+            AssertVoskRecovery(proxy, "flight to rejoin", "joinup");
+            AssertVoskRecovery(proxy, "abort take of", "aborttakeoff");
+            AssertNoVoskRecovery("weather report for tomorrow");
+            AssertNoVoskRecovery("weather request startup tomorrow");
+            AssertNoVoskRecovery("select channel thirty one");
+            if (SpeechRecognizerRouter.TryResolve("abort take of", 0.5, out string lowConfidenceRecovery))
+            {
+                throw new InvalidOperationException("Low-confidence Vosk input was recovered as '" + lowConfidenceRecovery + "'.");
+            }
             AssertSpecialCommand("got it", true);
             AssertSpecialCommand("GOT IT!", true);
             AssertSpecialCommand("I got it", false);
@@ -108,6 +118,24 @@ namespace VAICOM.Standalone
                 throw new InvalidOperationException(
                     "VAICOM unexpectedly matched '" + transcript + "' as " + category + "='"
                     + global::VAICOM.State.currentkey[category] + "'.");
+            }
+        }
+
+        private static void AssertVoskRecovery(StandaloneVoiceAttackProxy proxy, string transcript, string expectedCommand)
+        {
+            if (!SpeechRecognizerRouter.TryResolve(transcript, 0.95, out string recovered))
+            {
+                throw new InvalidOperationException("Vosk recovery rejected '" + transcript + "'.");
+            }
+
+            AssertMatch(proxy, recovered, "command", expectedCommand);
+        }
+
+        private static void AssertNoVoskRecovery(string transcript)
+        {
+            if (SpeechRecognizerRouter.TryResolve(transcript, 0.95, out string recovered))
+            {
+                throw new InvalidOperationException("Vosk unexpectedly recovered '" + transcript + "' as '" + recovered + "'.");
             }
         }
 

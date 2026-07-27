@@ -337,6 +337,10 @@ namespace VAICOM.Standalone
                         }
                         Console.WriteLine("Heard via " + result.Engine + fallback + confidence + " ("
                             + stopwatch.Elapsed.TotalSeconds.ToString("0.00") + "s): " + transcript);
+                        if (!string.IsNullOrWhiteSpace(result.OriginalText))
+                        {
+                            Console.WriteLine("Vosk recovered: " + result.OriginalText + " -> " + transcript);
+                        }
                         if (StandaloneSpecialCommands.TryExecute(transcript, out string specialCommandMessage))
                         {
                             Console.WriteLine(specialCommandMessage);

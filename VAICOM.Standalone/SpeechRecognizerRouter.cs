@@ -13,6 +13,7 @@ namespace VAICOM.Standalone
         public double? Confidence { get; set; }
         public bool UsedFallback { get; set; }
         public int OmittedGrammarPhrases { get; set; }
+        public string OriginalText { get; set; }
     }
 
     internal sealed class SpeechRecognizerRouter : IDisposable
@@ -63,7 +64,7 @@ namespace VAICOM.Standalone
             {
                 return await TranscribeWhisper(wav, true, cancellationToken).ConfigureAwait(false);
             }
-            bool usable = IsUsable(result);
+            bool usable = TryResolve(result, out string resolvedText);
             if (selected == SpeechBackendIds.Hybrid && !usable)
             {
                 return await TranscribeWhisper(wav, true, cancellationToken).ConfigureAwait(false);
@@ -71,10 +72,13 @@ namespace VAICOM.Standalone
 
             return new SpeechRecognitionResult
             {
-                Text = usable ? result.Text : string.Empty,
+                Text = usable ? resolvedText : string.Empty,
                 Engine = "Vosk",
                 Confidence = result.Confidence,
-                OmittedGrammarPhrases = result.OmittedGrammarPhrases
+                OmittedGrammarPhrases = result.OmittedGrammarPhrases,
+                OriginalText = usable && !string.Equals(resolvedText, result.Text, StringComparison.OrdinalIgnoreCase)
+                    ? result.Text
+                    : string.Empty
             };
         }
 
@@ -92,12 +96,28 @@ namespace VAICOM.Standalone
             };
         }
 
-        private static bool IsUsable(VoskTranscriptionResult result)
+        internal static bool TryResolve(VoskTranscriptionResult result, out string resolvedText)
         {
-            return !string.IsNullOrWhiteSpace(result.Text)
-                && result.Text.IndexOf("[unk]", StringComparison.OrdinalIgnoreCase) < 0
-                && SpeechGrammar.IsValidRecognition(result.Text)
-                && result.Confidence >= VoskFallbackThreshold;
+            return TryResolve(result.Text, result.Confidence, out resolvedText);
+        }
+
+        internal static bool TryResolve(string text, double confidence, out string resolvedText)
+        {
+            resolvedText = string.Empty;
+            if (string.IsNullOrWhiteSpace(text)
+                || text.IndexOf("[unk]", StringComparison.OrdinalIgnoreCase) >= 0
+                || confidence < VoskFallbackThreshold)
+            {
+                return false;
+            }
+
+            if (SpeechGrammar.IsValidRecognition(text))
+            {
+                resolvedText = text;
+                return true;
+            }
+
+            return SpeechGrammar.TryRecoverRecognition(text, out resolvedText);
         }
 
         private static void Reset(Stream stream)

@@ -146,6 +146,7 @@ namespace VAICOM
                     }
 
                     EnsureAiCrewPageRecipientAliases(ref warncounter);
+                    EnsureRequiredCommandAliases(ref warncounter);
 
                     Aliases.appendiceswpn = Aliases.reference["aiappendiceswpn"];
                     Aliases.appendicesdir = Aliases.reference["aiappendicesdir"];
@@ -210,6 +211,31 @@ namespace VAICOM
                         if (!recipients.ContainsKey(alias.Key))
                         {
                             recipients.Add(alias.Key, alias.Value);
+                            warncounter++;
+                            Log.Write("   -> " + alias.Key, Colors.Text);
+                        }
+                    }
+                }
+
+                private static void EnsureRequiredCommandAliases(ref int warncounter)
+                {
+                    if (!Aliases.reference.ContainsKey("aicommands"))
+                    {
+                        return;
+                    }
+
+                    Dictionary<string, string> commands = Aliases.reference["aicommands"];
+                    var requiredAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        { "Run the Starter", "runinertialstarter" },
+                        { "Run Starter", "runinertialstarter" },
+                    };
+
+                    foreach (KeyValuePair<string, string> alias in requiredAliases)
+                    {
+                        if (!commands.ContainsKey(alias.Key))
+                        {
+                            commands.Add(alias.Key, alias.Value);
                             warncounter++;
                             Log.Write("   -> " + alias.Key, Colors.Text);
                         }
