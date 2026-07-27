@@ -49,6 +49,14 @@ namespace VAICOM.Standalone
         public void SubmitTranscript(string transcript, params string[] segments)
         {
             ThrowIfDisposed();
+            if ((segments == null || segments.Length == 0)
+                && StandaloneProfileCommandRouter.TryMatch(transcript, out StandaloneProfileCommand profileCommand))
+            {
+                Proxy.SetTranscript(transcript, profileCommand.Segments);
+                Invoke(profileCommand.Context);
+                return;
+            }
+
             Proxy.SetTranscript(transcript, segments != null && segments.Length > 0 ? segments : null);
             Invoke("alias.aicomms");
         }

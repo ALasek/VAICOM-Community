@@ -51,6 +51,10 @@ namespace VAICOM.Standalone
             phrases.Add("take nine");
             phrases.Add("take ten");
             phrases.Add(StandaloneSpecialCommands.GotItPhrase);
+            foreach (string phrase in StandaloneProfileCommandRouter.GrammarPhrases())
+            {
+                phrases.Add(phrase);
+            }
             phraseCount = phrases.Count;
             phrases.Add("[unk]");
             return JsonConvert.SerializeObject(phrases.OrderBy(value => value, StringComparer.OrdinalIgnoreCase));
@@ -82,6 +86,7 @@ namespace VAICOM.Standalone
             string normalized = Normalize(value);
             if (string.IsNullOrWhiteSpace(normalized)) return false;
             if (StandaloneSpecialCommands.IsMatch(normalized)) return true;
+            if (StandaloneProfileCommandRouter.TryMatch(normalized, out StandaloneProfileCommand ignored)) return true;
 
             var aliases = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             foreach (var category in Aliases.inputscancats)

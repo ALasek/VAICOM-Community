@@ -14,6 +14,7 @@ The "vibe-coded" label is deliberate: this was built through iterative AI-assist
 - Optional local Whisper or hybrid fallback, downloaded only when requested.
 - Persistent microphone selection and recognition status in the VAICOM configuration window.
 - Global keyboard and DirectInput/HOTAS bindings for TX1 and TX2.
+- Voice-routed profile utilities for configuration, Chatter, radio channel/frequency selection, and the dynamic AIRIO commands shipped in the upstream profile.
 - `Ctrl+Alt+C` to open the VAICOM configuration window while the standalone host is running.
 - Deterministic command cleanup and conservative fuzzy recovery for common transcription errors.
 - Voice-driven stock radio-menu traversal, selected campaign prompts, and a focused set of Mi-24P Petrovich gunner commands.
@@ -26,7 +27,7 @@ This replaces the VoiceAttack **host used by VAICOM**, not VoiceAttack as a gene
 Current limitations include:
 
 - Standalone voice PTT is implemented for TX1 and TX2. Additional transmit nodes remain future work.
-- VoiceAttack wildcard segment behavior is only approximated, so some frequency-tuning and AIRIO profile macros may need further work.
+- The upstream demonstration-only `New Command` entry is not exposed. Chatter uses the exact phrase `chatter` instead of VoiceAttack's broad wildcard match.
 - The optional in-cockpit VAICOM kneeboard extension is disabled to avoid its aircraft-file modifications and associated multiplayer integrity-check problems.
 - Keep **F-14 Mini Wheel** disabled for pure-client multiplayer servers. It patches Heatblur cockpit files while enabled; the standalone host restores preserved originals when the feature is disabled or the host exits.
 - Recognition and DCS behavior still need broader testing across aircraft, missions, accents, microphones, and multiplayer environments.

@@ -198,6 +198,9 @@ namespace VAICOM
                                 break;
 
                             //25
+                            case "25":
+                                minval2 = 25;
+                                break;
                             case "2 5":
                                 minval2 = 25;
                                 break;
@@ -218,6 +221,9 @@ namespace VAICOM
                                 break;
 
                             //50
+                            case "50":
+                                minval2 = 50;
+                                break;
                             case "5 0":
                                 minval2 = 50;
                                 break;
@@ -235,6 +241,9 @@ namespace VAICOM
                                 break;
 
                             // 75
+                            case "75":
+                                minval2 = 75;
+                                break;
                             case "7 5":
                                 minval2 = 75;
                                 break;

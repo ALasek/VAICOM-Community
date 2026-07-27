@@ -119,7 +119,7 @@ namespace VAICOM.Standalone
                         host.SetWhisperRuntime(transcriber.RuntimeDescription);
                         host.SetStatus("Ready");
                         Console.WriteLine("Speech engines: " + transcriber.RuntimeDescription);
-                        Console.WriteLine("Vosk grammar: " + grammarCount + " current VAICOM aliases.");
+                        Console.WriteLine("Vosk grammar: " + grammarCount + " VAICOM aliases and profile commands.");
                         Console.CancelKeyPress += (sender, eventArgs) =>
                         {
                             eventArgs.Cancel = true;

@@ -20,6 +20,7 @@ namespace VAICOM.Standalone.Tests
                 TestHostSettings();
                 TestHostController();
                 TestDeterministicAliasMatcher();
+                TestProfileCommandRouter();
                 TestMenuReleasePolicy();
                 TestProxy();
                 TestAudioConversion();
@@ -29,7 +30,18 @@ namespace VAICOM.Standalone.Tests
                 TestDcsOriginalSafety();
                 if (args.Length > 0)
                 {
-                    TestTranscription(args[0]).GetAwaiter().GetResult();
+                    if (Directory.Exists(args[0]))
+                    {
+                        using (var runtime = new VaicomRuntime(new StandaloneVoiceAttackProxy(installDcsFiles: false)))
+                        {
+                            runtime.Initialize();
+                            TestVoskTranscription(args[0]).GetAwaiter().GetResult();
+                        }
+                    }
+                    else
+                    {
+                        TestTranscription(args[0]).GetAwaiter().GetResult();
+                    }
                 }
                 if (args.Length > 1)
                 {
@@ -264,6 +276,49 @@ namespace VAICOM.Standalone.Tests
                 "TX Link should keep menus open on PTT release.");
         }
 
+        private static void TestProfileCommandRouter()
+        {
+            AssertRoute("chatter", "chatter", "Chatter");
+            AssertRoute("configuration", "config", "Configuration");
+            AssertRoute("configuration window reset", "config.resetwindow", "Configuration Window Reset");
+            AssertRoute("link tune 1 2 decimal 3", "airio.dev.dl.tune", "Link Tune", "one", "two", "decimal", "three");
+            AssertRoute("radio tune 2 5 1 decimal 0 2 5", "airio.dev.radio.tune", "Radio Tune", "two", "five", "one", "decimal", "zero", "two five");
+            AssertRoute("radio tune 2 5 1 decimal 0", "airio.dev.radio.tune", "Radio Tune", "two", "five", "one", "decimal", "zero", "");
+            AssertRoute("select AM 2 5 1 decimal 0 0", "dev.radio.setfrq", "Select", "am", "two", "five", "one", "decimal", "zero", "zero");
+            AssertRoute("select 2 5 1 decimal 0 0", "dev.radio.setfrq", "Select", "", "two", "five", "one", "decimal", "zero", "zero");
+            AssertRoute("select channel 25", "dev.radio.setchn", "Select Channel", "25");
+            AssertRoute("TACAN tune X-Ray 1 2 9", "airio.dev.tacan.tune", "TACAN Tune", "x-ray", "one", "two", "nine");
+            AssertRoute("laser code 6 8 5", "airio.dev.laser.code", "Laser Code", "six", "eight", "five");
+            AssertRoute("map marker 10 to waypoint 2", "airio.map.markers", "Map Marker", "10", "to", "Waypoint 2");
+            AssertRoute("map marker 0 to grid", "airio.map.navgrid", "Map Marker", "0", "to Grid");
+            AssertRoute("orbit marker 10", "airio.map.markers.navigate", "orbit", "Marker", "10");
+            AssertRoute("track marker 4", "airio.map.markers.track", "Track Marker", "4");
+            AssertRoute("scan sector angels 70 at 150", "airio.dev.radar.sector", "Scan Sector Angels", "70", "at", "150");
+            AssertRoute("scan sector angels 10 40", "airio.dev.radar.sector", "Scan Sector Angels", "10", "", "40");
+
+            StandaloneProfileCommandRouter.TryMatch("radio tune 2 5 1 decimal 0 2 5", out StandaloneProfileCommand radioTune);
+            var proxy = new StandaloneVoiceAttackProxy(installDcsFiles: false);
+            proxy.SetTranscript("radio tune 2 5 1 decimal 0 2 5", radioTune.Segments);
+            Assert(proxy.Utility.ParseTokens("{CMDSEGMENT:6}") == "25", "Standalone numeric segment conversion changed the AIRIO radio suffix contract.");
+
+            Assert(!StandaloneProfileCommandRouter.TryMatch("select channel 31", out StandaloneProfileCommand ignored), "Out-of-range channel was accepted.");
+            Assert(!StandaloneProfileCommandRouter.TryMatch("map marker 0 to waypoint 1", out ignored), "Out-of-range destination marker was accepted.");
+            Assert(!StandaloneProfileCommandRouter.TryMatch("scan sector angels 71 at 40", out ignored), "Invalid radar step was accepted.");
+            Assert(!StandaloneProfileCommandRouter.TryMatch("new command", out ignored), "Upstream demonstration command was exposed.");
+
+            string[] grammarPhrases = new System.Collections.Generic.List<string>(StandaloneProfileCommandRouter.GrammarPhrases()).ToArray();
+            Assert(grammarPhrases.Length > 64000, "Dynamic profile phrases were not added to the Vosk grammar.");
+            Assert(Array.IndexOf(grammarPhrases, "configuration window reset") >= 0, "Configuration reset is missing from the Vosk grammar.");
+            Assert(Array.IndexOf(grammarPhrases, "scan sector angels seventy at one hundred fifty") >= 0, "Radar sector phrase is missing from the Vosk grammar.");
+        }
+
+        private static void AssertRoute(string transcript, string context, params string[] segments)
+        {
+            Assert(StandaloneProfileCommandRouter.TryMatch(transcript, out StandaloneProfileCommand command), "Profile command did not match: " + transcript);
+            Assert(command.Context == context, "Wrong context for " + transcript + ": " + command.Context);
+            Assert(string.Join("|", command.Segments) == string.Join("|", segments), "Wrong segments for " + transcript + ": " + string.Join("|", command.Segments));
+        }
+
         private static void TestAudioConversion()
         {
             var pcm = new byte[PushToTalkRecorder.CaptureSampleRate * 2];
@@ -357,12 +412,45 @@ namespace VAICOM.Standalone.Tests
             using (MemoryStream audio = CreateSyntheticCommand("rearm"))
             using (var transcriber = new VoskTranscriber(modelPath))
             {
+                string grammar = SpeechGrammar.BuildJson(out int phraseCount);
+                Console.WriteLine("Vosk test grammar: " + phraseCount + " phrases.");
+                var timer = System.Diagnostics.Stopwatch.StartNew();
                 VoskTranscriptionResult result = await transcriber.TranscribeAsync(
                     audio,
-                    "[\"rearm\",\"rejoin\",\"abort takeoff\",\"inime\",\"[unk]\"]").ConfigureAwait(false);
+                    grammar).ConfigureAwait(false);
+                timer.Stop();
+                Console.WriteLine("First full-grammar recognition: " + timer.Elapsed.TotalSeconds.ToString("0.000") + "s");
+                Console.WriteLine("Grammar phrases omitted by installed vocabulary: " + result.OmittedGrammarPhrases);
                 Console.WriteLine("Vosk synthetic transcription: " + result.Text + " (" + result.Confidence.ToString("0.000") + ")");
                 Assert(result.Text.IndexOf("rearm", StringComparison.OrdinalIgnoreCase) >= 0, "Vosk did not recognize synthetic 'rearm'.");
-                Assert(result.OmittedGrammarPhrases == 1, "Vosk vocabulary filtering did not omit the unknown grammar phrase.");
+
+                using (MemoryStream secondAudio = CreateSyntheticCommand("rearm"))
+                {
+                    timer.Restart();
+                    result = await transcriber.TranscribeAsync(secondAudio, grammar).ConfigureAwait(false);
+                    timer.Stop();
+                    Console.WriteLine("Cached full-grammar recognition: " + timer.Elapsed.TotalSeconds.ToString("0.000") + "s");
+                    Assert(result.Text.IndexOf("rearm", StringComparison.OrdinalIgnoreCase) >= 0, "Cached Vosk recognition failed.");
+                }
+
+                foreach (string profilePhrase in new[]
+                {
+                    "configuration",
+                    "select channel twenty five",
+                    "radio tune two five one decimal zero two five",
+                    "scan sector angels ten at forty",
+                    "laser code six eight five",
+                    "map marker two to waypoint one",
+                    "tacan tune x ray one two nine"
+                })
+                {
+                    using (MemoryStream profileAudio = CreateSyntheticCommand(profilePhrase))
+                    {
+                        result = await transcriber.TranscribeAsync(profileAudio, grammar).ConfigureAwait(false);
+                        Console.WriteLine("Vosk profile command: " + profilePhrase + " -> " + result.Text);
+                        Assert(StandaloneProfileCommandRouter.TryMatch(result.Text, out StandaloneProfileCommand ignored), "Vosk did not produce a routable profile command for: " + profilePhrase);
+                    }
+                }
             }
         }
 
