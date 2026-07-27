@@ -122,6 +122,10 @@ namespace VAICOM.Standalone
         {
             CommandText = transcript ?? string.Empty;
             matchingCommandText = DeterministicAliasMatcher.NormalizeTranscript(CommandText);
+            if (NumericAliasMatcher.TryRecoverTranscript(matchingCommandText, out string numericMatch))
+            {
+                matchingCommandText = numericMatch;
+            }
             Command.SetSegments(segments ?? CommandText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             if (!string.Equals(CommandText, matchingCommandText, StringComparison.OrdinalIgnoreCase))
             {

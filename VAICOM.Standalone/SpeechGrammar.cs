@@ -37,6 +37,10 @@ namespace VAICOM.Standalone
                     {
                         phrases.Add(normalized);
                     }
+                    foreach (string variant in NumericAliasMatcher.GrammarVariants(alias))
+                    {
+                        phrases.Add(variant);
+                    }
                 }
             }
 
@@ -87,8 +91,17 @@ namespace VAICOM.Standalone
             string normalized = Normalize(value);
             if (string.IsNullOrWhiteSpace(normalized)
                 || normalized.IndexOf("[unk]", StringComparison.OrdinalIgnoreCase) >= 0
-                || StandaloneProfileCommandRouter.LooksLikeProfileCommand(normalized)
-                || !Aliases.inputscancats.TryGetValue("command", out Dictionary<string, string> commands))
+                || StandaloneProfileCommandRouter.LooksLikeProfileCommand(normalized))
+            {
+                return false;
+            }
+
+            if (NumericAliasMatcher.TryRecoverTranscript(normalized, out recovered))
+            {
+                return true;
+            }
+
+            if (!Aliases.inputscancats.TryGetValue("command", out Dictionary<string, string> commands))
             {
                 return false;
             }

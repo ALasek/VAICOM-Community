@@ -20,6 +20,7 @@ namespace VAICOM.Standalone.Tests
                 TestHostSettings();
                 TestHostController();
                 TestDeterministicAliasMatcher();
+                TestNumericAliasMatcher();
                 TestProfileCommandRouter();
                 TestMenuReleasePolicy();
                 TestProxy();
@@ -313,6 +314,44 @@ namespace VAICOM.Standalone.Tests
             Assert(Array.IndexOf(grammarPhrases, "scan sector angels seventy at one hundred fifty") >= 0, "Radar sector phrase is missing from the Vosk grammar.");
         }
 
+        private static void TestNumericAliasMatcher()
+        {
+            const string captured055 = "captured bogey bull 055 180";
+            var aliases = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Captured Bogey Bull 045 120"] = "Action Captured Bogey Bull 045/120",
+                ["Captured Bogey Bull 055 180"] = "Action Captured Bogey Bull 055/180"
+            };
+            AssertNumericAlias(aliases, "Captured Bogey Bull 055 180", captured055);
+            AssertNumericAlias(aliases, "Captured Bogey Bull zero five five one eight zero", captured055);
+            AssertNumericAlias(aliases, "Captured Bogey Bull oh five five one eighty", captured055);
+            AssertNumericAlias(aliases, "Captured Bogey Bull zero five five one hundred eighty", captured055);
+            AssertNumericAlias(aliases, "Captured Bogey Bull oh five five one hundred and eighty", captured055);
+            AssertNumericAlias(aliases, "Captured Bogey Bull oh forty five one twenty", "captured bogey bull 045 120");
+            Assert(!NumericAliasMatcher.TryRecoverTranscript(
+                "Captured Bogey Bull zero five six one hundred eighty",
+                aliases,
+                out string ignored), "Unknown bullseye values matched a campaign command.");
+
+            var proxy = new StandaloneVoiceAttackProxy(installDcsFiles: false);
+            proxy.SetTranscript("Copy 9 Line");
+            Assert(proxy.ParseTokens("{CMD}") == "Copy nine Line", "Lexical Nine Line normalization regressed.");
+
+            string[] variants = new System.Collections.Generic.List<string>(
+                NumericAliasMatcher.GrammarVariants("Captured Bogey Bull 055 180")).ToArray();
+            Assert(Array.IndexOf(variants, "captured bogey bull oh five five one eighty") >= 0, "Aviation numeric phrase is missing from Vosk grammar variants.");
+            Assert(Array.IndexOf(variants, "captured bogey bull zero five five one hundred eighty") >= 0, "Cardinal numeric phrase is missing from Vosk grammar variants.");
+        }
+
+        private static void AssertNumericAlias(
+            System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> aliases,
+            string transcript,
+            string expected)
+        {
+            Assert(NumericAliasMatcher.TryRecoverTranscript(transcript, aliases, out string recovered), "Numeric alias did not match: " + transcript);
+            Assert(recovered == expected, "Numeric alias resolved incorrectly: " + transcript + " -> " + recovered);
+        }
+
         private static void AssertRoute(string transcript, string context, params string[] segments)
         {
             Assert(StandaloneProfileCommandRouter.TryMatch(transcript, out StandaloneProfileCommand command), "Profile command did not match: " + transcript);
@@ -462,6 +501,21 @@ namespace VAICOM.Standalone.Tests
                         global::VAICOM.Database.Aliases.inputscancats["command"].TryGetValue(resolvedStarter, out string starterCommand)
                         && starterCommand == "runinertialstarter",
                         "Vosk did not resolve 'run starter' to the inertial starter command: " + resolvedStarter);
+                }
+
+                using (MemoryStream bullseyeAudio = CreateSyntheticCommand("captured bogey bull oh five five one eighty"))
+                {
+                    result = await transcriber.TranscribeAsync(bullseyeAudio, grammar).ConfigureAwait(false);
+                    Console.WriteLine("Vosk numeric command: captured bogey bull oh five five one eighty -> " + result.Text);
+                    timer.Restart();
+                    bool resolved = SpeechRecognizerRouter.TryResolve(result, out string resolvedBullseye);
+                    timer.Stop();
+                    Console.WriteLine("Numeric alias recovery: " + timer.Elapsed.TotalMilliseconds.ToString("0.0") + "ms");
+                    Assert(resolved, "Vosk rejected the spoken bullseye alias.");
+                    Assert(
+                        global::VAICOM.Database.Aliases.inputscancats["command"].TryGetValue(resolvedBullseye, out string bullseyeCommand)
+                        && bullseyeCommand == "Action Captured Bogey Bull 055/180",
+                        "Vosk did not resolve the spoken bullseye values to the canonical campaign command: " + resolvedBullseye);
                 }
             }
         }
