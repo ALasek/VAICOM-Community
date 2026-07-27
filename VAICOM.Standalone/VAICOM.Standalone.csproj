@@ -4,14 +4,15 @@
     <TargetFramework>net472</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
-    <AssemblyName>VAICOM.Standalone</AssemblyName>
+    <AssemblyName>VAICOM-Community-noVA</AssemblyName>
     <RootNamespace>VAICOM.Standalone</RootNamespace>
     <LangVersion>latest</LangVersion>
     <StandaloneBuild>true</StandaloneBuild>
+    <NovaStandaloneProject>true</NovaStandaloneProject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VAICOM\VAICOM.csproj" AdditionalProperties="StandaloneBuild=true;Configuration=$(Configuration)" />
-    <ProjectReference Include="..\VAICOM.Standalone.Speech\VAICOM.Standalone.Speech.csproj" />
+    <ProjectReference Include="..\VAICOM\VAICOM.csproj" AdditionalProperties="StandaloneBuild=true" />
+    <ProjectReference Include="..\VAICOM.Standalone.Speech\VAICOM.Standalone.Speech.csproj" AdditionalProperties="NovaStandaloneProject=true" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Speech" />

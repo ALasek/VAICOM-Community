@@ -7,6 +7,7 @@
     <RootNamespace>VAICOM.Standalone.Speech</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
+    <NovaStandaloneProject>true</NovaStandaloneProject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -14,6 +15,6 @@
     <PackageReference Include="Vosk" Version="0.3.38" />
     <PackageReference Include="Whisper.net" Version="1.9.1" />
     <PackageReference Include="Whisper.net.Runtime" Version="1.9.1" />
-    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.9.1" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.9.1" Condition="'$(IncludeWhisperCuda)' == 'true'" />
   </ItemGroup>
 </Project>

@@ -1,37 +1,31 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
-
-env:
-  PROJECT_NAME: VAICOM
-  SOLUTION_NAME: VAICOM28.sln
+name: noVA standalone CI
 
 on:
   push:
-    branches: [ "Open-Beta" ]
+    branches: [main]
   pull_request:
-    branches: [ "Open-Beta" ]
+    branches: [main]
   workflow_dispatch:
-  
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-
-    runs-on: windows-2019
+  build-and-smoke-test:
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: 'Open-Beta'
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.3.1
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.2
-    - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1.3.1
-    - name: Restore Packages
-      run: msbuild  $SOLUTION_NAME -t:restore -p:RestoreUseSkipNonexistentTargets=false
-    - name: Build solution
-      run: msbuild $SOLUTION_NAME -t:rebuild -property:Configuration=Release
+      - uses: actions/checkout@v6
 
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore VAICOM.Standalone.Tests/VAICOM.Standalone.Tests.csproj -p:IncludeWhisperCuda=false
+
+      - name: Build Release
+        run: dotnet build VAICOM.Standalone.Tests/VAICOM.Standalone.Tests.csproj -c Release -p:StandaloneBuild=true -p:IncludeWhisperCuda=false -m:1 --no-restore
+
+      - name: Run standalone smoke tests
+        run: .\VAICOM.Standalone.Tests\bin\Release\net472\VAICOM.Standalone.Tests.exe

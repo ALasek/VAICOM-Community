@@ -1,12 +1,12 @@
-# VAICOM Standalone with local constrained speech recognition
+# VAICOM Community noVA operation guide
 
 This build replaces the VoiceAttack host, not VAICOM's DCS logic. The executable captures a push-to-talk utterance, recognizes it locally with constrained Vosk or Whisper, exposes that transcript through VoiceAttack-compatible `{CMD}` and segment APIs, and invokes VAICOM's original `alias.aicomms` entry point. VAICOM still owns its complete recipient, command, radio, module, and live-DCS-state matching. Exact aliases remain the first choice; when no command alias matches, a strict deterministic fuzzy fallback can recover a close command only when it clears both a confidence threshold and a winner-margin threshold.
 
 Runtime defaults:
 
-- Whisper model: `small.en`
-- Whisper runtime: CUDA first, CPU fallback
 - Default ASR: constrained Vosk grammar generated from current VAICOM aliases
+- Optional Whisper model: `small.en`, downloaded with `--download-model` or packaged with `-IncludeWhisperModel`
+- Optional Whisper runtime: CPU by default; CUDA is included only in builds made with `-IncludeCuda`
 - Radio 1 default push to talk: global `F13` -> `TX1`
 - Radio 2 default push to talk: global `F14` -> `TX2`
 
@@ -25,7 +25,9 @@ Start VAICOM before DCS so the DCS export bridge can connect immediately. Keep t
 
 ## Build from source
 
-From a Windows PowerShell prompt in the repository root, run `./build-standalone.ps1`. It restores and builds the .NET Framework 4.7.2 projects, downloads the local Whisper and Vosk models if absent, and writes the runnable package to the Git-ignored `dist/VAICOM-Whisper-Standalone` directory.
+From a Windows PowerShell prompt in the repository root, run `./build-standalone.ps1`. It restores and builds the .NET Framework 4.7.2 projects, verifies and installs the Vosk model, and writes the runnable package to the Git-ignored `dist/VAICOM-Community-noVA` directory.
+
+Whisper is optional. Add `-IncludeWhisperModel` to package the verified `small.en` model and `-IncludeCuda` to package the CUDA runtime. Without those switches, noVA remains fully functional with constrained Vosk and keeps the small CPU Whisper runtime available for a later `--download-model` installation.
 
 ## Useful options
 
@@ -55,6 +57,8 @@ Writable VAICOM configuration, database, log, and `host-settings.json` files liv
 VAICOM adds its block to the existing `Export.lua` while retaining unrelated integrations. It also installs the VAICOM export script and DCS-side radio hooks.
 
 This fork adds a safety layer missing upstream: before patching an existing DCS file, it stores the exact file beside it as `*.vaicom-standalone.original`. F-14 and other temporary AIRIO replacements are restored from those bytes when the host exits. Back up the DCS and Saved Games files you customize before first use.
+
+For pure-client multiplayer, leave **F-14 Mini Wheel** unchecked. The wheel requires temporary edits under the F-14 cockpit scripts and can therefore fail the server's integrity check while enabled. If you migrated from another VAICOM installation and its first preserved sidecar already contains a modified file, disable the wheel, restore that DCS file with a DCS repair, remove the stale `*.vaicom-standalone.original` sidecar, and then start noVA once to capture the clean original.
 
 After a DCS update, start this host once before flying so VAICOM can rebuild its hooks. If an update changes a file that still has an old `*.vaicom-standalone.original` sidecar, preserve the new DCS file and remove the stale sidecar before starting the host; it will capture the new original.
 

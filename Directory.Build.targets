@@ -1,11 +1,24 @@
 <Project>
-  <PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Update="@(ProjectReference)" SetConfiguration="Configuration=$(Configuration)" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(NovaStandaloneProject)' != 'true'">
 	  <AssemblyTitle>VAICOM for DCS World</AssemblyTitle>
 	  <Product>VAICOM Community Edition</Product>
 	  <Description>Interactive Voice Control for DCS World</Description>
-	  <ProductVersion>3.1.4.11</ProductVersion>
-	  <AssemblyVersion>3.1.4.11</AssemblyVersion>
-	  <FileVersion>3.1.4.11</FileVersion>
+	  <ProductVersion>3.1.5.3</ProductVersion>
+	  <AssemblyVersion>3.1.5.3</AssemblyVersion>
+	  <FileVersion>3.1.5.3</FileVersion>
 	  <Copyright>MIT</Copyright>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(NovaStandaloneProject)' == 'true'">
+    <AssemblyTitle>VAICOM Community noVA</AssemblyTitle>
+    <Product>VAICOM Community noVA</Product>
+    <Description>Standalone local speech host for VAICOM Community</Description>
+    <Version>0.1.0</Version>
+    <ProductVersion>0.1.0</ProductVersion>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Copyright>VAICOM upstream copyright retained; noVA modifications under MIT</Copyright>
   </PropertyGroup>
 </Project>

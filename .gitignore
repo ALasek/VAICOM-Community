@@ -362,7 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# Local standalone release package (includes the Whisper model)
+# Local standalone release packages and downloaded models
 dist/
 /tmp
 
@@ -375,3 +375,13 @@ dist/
 /CLAUDE.md
 /ai-code-context.md
 /ai-codebase.md
+
+# Legacy generated upstream release payloads are not part of noVA releases
+/VAICOMPRO.zip
+/VAICOM_Installer/Resources/VAICOMPRO.zip
+/VAICOM_Installer/Resources/VAICOM Pro Community User Manual.docx
+/VAICOM_Installer/Resources/VAICOM Pro Community User Manual.pdf
+/WSO/DevPipe/listenTo_index.txt
+/WSO/DevPipe/F-14B(U) DTC_SYR_1.dtc
+/WSO/DevPipe/Utils.lua
+/WSO/DevPipe/airports.json

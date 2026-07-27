@@ -73,6 +73,11 @@ namespace VAICOM
             }
             public void WarnChangedRecognitionModel()
             {
+                if (standaloneHostControl != null)
+                {
+                    return;
+                }
+
                 string caption = "Changed Processing Model";
                 string message = "A different speech processing model was selected.\n\nIMPORTANT: YOU MUST UPDATE YOUR VOICEATTACK PROFILE AND VOICEATTACK SETTING.\n\n1) On the Editor tab, press the FINISH button and follow the steps to update your VoiceAttack profile.\n2) In VoiceAttack options, adjust the Unrecognized Speech Delay value.\n\nUnrecognized Speech Delay\n\nVSPX ON : set value between 500 and 1000\nVSPX OFF: set value to 0\n\nFor details about the different recognition models refer to the User Manual.";
                 MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Information);

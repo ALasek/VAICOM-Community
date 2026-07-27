@@ -95,14 +95,17 @@ namespace VAICOM.Standalone
                         return 0;
                     }
 
-                    if (!File.Exists(modelPath))
+                    string selectedBackend = host.SpeechBackend;
+                    if ((selectedBackend == SpeechBackendIds.Whisper || selectedBackend == SpeechBackendIds.Hybrid)
+                        && !File.Exists(modelPath))
                     {
-                        Console.Error.WriteLine("Whisper model not found: " + modelPath);
-                        Console.Error.WriteLine("Run with --download-model once, or supply --model PATH.");
+                        Console.Error.WriteLine("The selected " + selectedBackend + " backend requires a Whisper model: " + modelPath);
+                        Console.Error.WriteLine("Run with --download-model once, supply --model PATH, or select Vosk in the Host tab.");
                         return 2;
                     }
 
-                    if (!Directory.Exists(voskModelPath))
+                    if ((selectedBackend == SpeechBackendIds.Vosk || selectedBackend == SpeechBackendIds.Hybrid)
+                        && !Directory.Exists(voskModelPath))
                     {
                         Console.Error.WriteLine("Vosk model not found: " + voskModelPath);
                         Console.Error.WriteLine("Run build-standalone.ps1 to download and package it.");
@@ -400,7 +403,7 @@ namespace VAICOM.Standalone
 
         private static void ShowHelp()
         {
-            Console.WriteLine("VAICOM Standalone - local speech host for VAICOM Community");
+            Console.WriteLine("VAICOM Community noVA - local speech host for VAICOM Community");
             Console.WriteLine();
             Console.WriteLine("  --download-model            Download ggml-small.en.bin to Models");
             Console.WriteLine("  --model PATH                Use another Whisper.net GGML model");

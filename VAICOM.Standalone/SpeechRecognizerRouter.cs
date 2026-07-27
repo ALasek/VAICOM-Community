@@ -31,7 +31,15 @@ namespace VAICOM.Standalone
             this.voskModelPath = voskModelPath;
         }
 
-        public string RuntimeDescription => "Vosk constrained; Whisper available on demand";
+        public string RuntimeDescription
+        {
+            get
+            {
+                string voskState = Directory.Exists(voskModelPath) ? "Vosk ready" : "Vosk model missing";
+                string whisperState = File.Exists(whisperModelPath) ? "Whisper ready" : "Whisper model optional";
+                return voskState + "; " + whisperState;
+            }
+        }
 
         public async Task<SpeechRecognitionResult> TranscribeAsync(
             Stream wav,

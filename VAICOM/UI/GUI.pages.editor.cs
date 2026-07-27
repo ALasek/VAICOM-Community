@@ -532,6 +532,16 @@ namespace VAICOM
                 {
                     FileHandler.Database.ExportMasterKeywordString();
                     FileHandler.Database.WriteAllCategoriesToFile(true);
+                    if (standaloneHostControl != null)
+                    {
+                        Message.Text = "Keywords saved for the noVA standalone host.";
+                        State.activeconfig.Editorunsavedchanges = false;
+                        Settings.ConfigFile.WriteConfigToFile(true);
+                        Reflectunsavedchanges();
+                        Aliases.SetAOCSCallsign();
+                        return;
+                    }
+
                     Message.Text = "Keywords exported. Follow instructions to update VA profile.";
                     string caption = "Modified database";
                     string message = "The keywords database was updated.\n\nIMPORTANT: YOU MUST NOW UPDATE THE VOICEATTACK PROFILE.\n\nThe updated keyword set was placed in Windows clipboard.\nOpen the VoiceAttack window now and edit the profile (pencil icon).\n\nIn the profile, double-click the 'AI Communications' command (category Keywords collection) and clear all existing keywords in the 'When I Say' field (use Ctrl+A, then Delete key).\nThen apply Paste (Ctrl+V) to place the new keyword set and press Apply/Done to store.\n\nNOTES:\nIn VA make sure multipart commands are consolidated.\n";
@@ -566,7 +576,9 @@ namespace VAICOM
                 if (FileHandler.Database.ImportCSVAsKeywords())
                 {
 
-                    Message.Text = "The file was imported. Use FINISH steps to update the VA profile.";
+                    Message.Text = standaloneHostControl == null
+                        ? "The file was imported. Use FINISH steps to update the VA profile."
+                        : "The file was imported. Press SAVE to apply it to the noVA standalone host.";
                     State.activeconfig.Editorunsavedchanges = true;
                     Settings.ConfigFile.WriteConfigToFile(true);
 

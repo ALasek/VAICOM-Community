@@ -23,6 +23,7 @@ namespace VAICOM.UI
             }
 
             StandaloneHostPage.Visibility = Visibility.Visible;
+            ConfigureStandaloneEditorUi();
             RefreshStandaloneHostUi(true);
 
             standaloneHostRefreshTimer = new DispatcherTimer
@@ -32,6 +33,15 @@ namespace VAICOM.UI
             standaloneHostRefreshTimer.Tick += StandaloneHostRefreshTimer_Tick;
             standaloneHostRefreshTimer.Start();
             Closed += StandaloneHostWindow_Closed;
+        }
+
+        private void ConfigureStandaloneEditorUi()
+        {
+            NewRecognitionModel.Visibility = Visibility.Collapsed;
+            KeywordsExport.Content = "SAVE";
+            KeywordsExport.ToolTip = "Save keyword changes for the noVA standalone host.";
+            RestoreDefaults.ToolTip = "Restore the default keyword database.";
+            Explanation_Text.Text = "Keyword changes are used directly by noVA. No VoiceAttack profile update is required.";
         }
 
         private void StandaloneHostWindow_Closed(object sender, EventArgs e)

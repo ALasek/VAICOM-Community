@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-VAICOM.Standalone.exe --self-test
+VAICOM-Community-noVA.exe --self-test
 pause

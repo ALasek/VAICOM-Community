@@ -1,16 +1,9 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+VAICOM Community noVA is a personal, experimental fork and does not have a formal support commitment. Security fixes target the latest commit on `main` and, when releases exist, the latest noVA release. Upstream VAICOM and VoiceAttack issues are outside this fork's support scope.
 
-Only the latest release version of Vaicom Pro is supported. Also make sue that Voice Attack is also running at or above the Vaicom Pro required version during the startup sequence of the plugin.
+## Reporting a vulnerability
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 3.0.0.X   | :white_check_mark: |
+Use **Security → Report a vulnerability** on this GitHub repository to report a vulnerability privately. Do not publish exploit details, credentials, or sensitive logs in a public issue.
 
-
-## Reporting a Vulnerability
-
-Please report a vulnerability to the site admin via DM or a DM me on my discord.
-
-Please DO NOT place it in the Issues section on this GitHub Site, as this would increase exposure.
+If private vulnerability reporting is unavailable, contact the repository owner through the contact method on their GitHub profile and include only enough information to arrange a private report. Use the public issue tracker for ordinary bugs that do not contain sensitive information.

@@ -454,7 +454,7 @@ namespace VAICOM.Standalone
             {
                 CreateHandle(new CreateParams
                 {
-                    Caption = "VAICOM Standalone Input",
+                    Caption = "VAICOM Community noVA Input",
                     ExStyle = 0x80
                 });
             }

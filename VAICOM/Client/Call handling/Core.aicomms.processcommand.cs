@@ -62,6 +62,17 @@ namespace VAICOM
 
                 public static bool noTX()
                 {
+                    try
+                    {
+                        if (State.currentcommand != null && (State.currentcommand.isOptions() || State.currentcommand.isMenu()))
+                        {
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                    }
+
                     if (State.elapsedsincelastpttrelease > 2)
                     {
                         // void hotkey
@@ -914,6 +925,7 @@ namespace VAICOM
                         {
                             bool immediateHotMicSend = !State.transmitting && State.IsCrewHotMicActiveOnIntercomTX();
                             bool deferSendUntilReleaseInVoiceModes = (State.activeconfig.MP_VoIPUseSwitch || State.activeconfig.MP_VoIPParallel)
+                                && State.activeconfig.MP_DelayTransmit
                                 && State.transmitting
                                 && !riocommand
                                 && !selectcommand

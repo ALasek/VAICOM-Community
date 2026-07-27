@@ -1,72 +1,26 @@
-# Contributing to Vaicom Pro Community
+# Contributing to VAICOM Community noVA
 
-Thank you for your interest in contributing to the VaiCom Pro Community! We appreciate your help in improving the project. Please follow the guidelines below to ensure a smooth collaboration.
+This is a personal, experimental fork of [VAICOM Community](https://github.com/Penecruz/VAICOM-Community). Contributions to the standalone speech host are welcome; changes intended for the original VoiceAttack-based project should be proposed upstream instead.
 
-## Getting Started
+## Before opening a pull request
 
-### 1. Fork the Repository
-- Navigate to the VaiCom Pro Community GitHub repository.
-- Click on the **Fork** button to create your own copy.
+1. Create a branch from `main`.
+2. Build the standalone solution on Windows:
 
-### 2. Clone the Repository
-```sh
-$ git clone https://github.com/your-username/vaicom-pro-community.git
-$ cd vaicom-pro-community
-```
+   ```powershell
+   dotnet restore VAICOM.Standalone.sln
+   dotnet build VAICOM.Standalone.sln -c Release -p:StandaloneBuild=true -m:1 --no-restore
+   ```
 
-### 3. Create a Branch
-- Use a descriptive branch name that reflects the changes you are making.
-```sh
-$ git checkout -b feature-branch-name
-```
+3. Run the compiled smoke tests:
 
-## Making Changes
+   ```powershell
+   .\VAICOM.Standalone.Tests\bin\Release\net472\VAICOM.Standalone.Tests.exe
+   ```
 
-### 4. Follow Code and Documentation Standards
-- Ensure your code follows the project's style guidelines.
-- Update documentation if necessary.
+4. Update `README.md` or `STANDALONE.md` when behavior or setup changes.
+5. Keep machine-specific paths, logs, models, generated packages, and AI-assistant notes out of commits.
 
-### 5. Test Your Changes
-- If applicable, test your changes before submitting them.
-- Ensure that your changes do not introduce new bugs or issues.
+DCS does not need to be running for the build and smoke tests. Live DCS validation is still required for changes to radio routing, aircraft integrations, menus, or installed DCS scripts.
 
-### 6. Commit and Push
-```sh
-$ git add .
-$ git commit -m "Brief description of your changes"
-$ git push origin feature-branch-name
-```
-
-## Submitting a Pull Request (PR)
-
-### 7. Open a PR
-- Navigate to the **Pull Requests** tab in the original repository.
-- Click **New Pull Request** and select your branch.
-- Provide a clear and concise description of your changes.
-
-### 8. Address Feedback
-- Be prepared to update your PR based on feedback from maintainers.
-- Discuss any concerns or questions in the PR comments.
-
-## Reporting Issues
-
-If you encounter any issues while using VaiCom Pro, please follow these steps to report them:
-
-1. **Check for Existing Issues**: Before reporting a new issue, browse the [Issues](https://github.com/vaicom-pro-community/issues) to see if it has already been reported.
-2. **Create a New Issue**:
-   - Go to the **Issues** tab and click **New Issue**.
-   - Provide a clear and concise title for your issue.
-   - Describe the problem in detail, including steps to reproduce, expected behavior, and actual behavior.
-   - Attach relevant screenshots, logs, or other supporting information.
-3. **Engage in Discussion**: Maintain a respectful and constructive conversation as the maintainers and community members investigate your issue.
-
-## Community Guidelines
-
-- Be respectful and constructive in discussions.
-- Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-- Help others by reviewing PRs and providing feedback.
-
-## Need Help?
-If you have any questions, feel free to open an issue or reach out to the community.
-
-Happy coding! 🚀
+Open pull requests against `main`. Use the [fork's issue tracker](https://github.com/ALasek/VAICOM-Community-noVA/issues) for reproducible noVA bugs and feature proposals.
