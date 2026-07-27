@@ -38,6 +38,7 @@ namespace VAICOM.Standalone
             AssertMatch(proxy, "2 rejoin", "command", "joinup");
             AssertMatch(proxy, "request startup", "command", "requestenginesstart");
             AssertMatch(proxy, "run starter", "command", "runinertialstarter");
+            AssertMatch(proxy, "intent to refuel", "command", "intenttorefuel");
             AssertMatch(proxy, "a board to take off", "command", "aborttakeoff");
             AssertMatch(proxy, "abort take of", "command", "aborttakeoff");
             AssertNoMatch(proxy, "weather report for tomorrow", "command");

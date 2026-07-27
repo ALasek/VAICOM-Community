@@ -234,6 +234,7 @@ namespace VAICOM
                 { "Approaching for Refuel", "intenttorefuel"        },
                 { "Approaching Nose Cold", "intenttorefuel"         },
                 { "Approaching Switches Safe", "intenttorefuel"     },
+                { "Intent to Refuel",      "intenttorefuel"        },
                 { "Abort Refuel",           "abortrefuel"           },
                 { "Breakaway",              "abortrefuel"           },
                 { "Returning Observation",  "abortrefuel"           },

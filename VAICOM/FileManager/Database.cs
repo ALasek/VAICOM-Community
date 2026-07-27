@@ -227,6 +227,7 @@ namespace VAICOM
                     Dictionary<string, string> commands = Aliases.reference["aicommands"];
                     var requiredAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     {
+                        { "Intent to Refuel", "intenttorefuel" },
                         { "Run the Starter", "runinertialstarter" },
                         { "Run Starter", "runinertialstarter" },
                     };
