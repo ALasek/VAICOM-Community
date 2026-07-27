@@ -52,10 +52,23 @@ namespace VAICOM.Standalone
 
         public static bool TryRecoverTranscript(string transcript, out string recovered)
         {
-            IEnumerable<KeyValuePair<string, string>> aliases = global::VAICOM.Database.Aliases.inputscancats.Values
-                .Where(category => category != null)
-                .SelectMany(category => category);
-            return TryRecoverTranscript(transcript, aliases, out recovered);
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    KeyValuePair<string, string>[] aliases = global::VAICOM.Database.Aliases.inputscancats.Values
+                        .Where(category => category != null)
+                        .SelectMany(category => category)
+                        .ToArray();
+                    return TryRecoverTranscript(transcript, aliases, out recovered);
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            }
+
+            recovered = string.Empty;
+            return false;
         }
 
         internal static bool TryRecoverTranscript(
