@@ -335,6 +335,7 @@ namespace VAICOM
                 { "Request Repair",         "requestrepair"         },
                 { "Stow the Boarding Ladder","stowboardingladder"   },
                 { "Run Inertial Starter",   "runinertialstarter"    },
+                { "Run the Starter",        "runinertialstarter"    },
                 { "Request HMD",            "requesthmd"            },
                 { "Request NVG",            "requestnvg"            },
                 { "Load Water",             "loadwater"             },
