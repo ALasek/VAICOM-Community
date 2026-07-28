@@ -228,6 +228,8 @@ namespace VAICOM
                     var requiredAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     {
                         { "Intent to Refuel", "intenttorefuel" },
+                        { "Ready Pre Contact", "readyprecontact" },
+                        { "Pre Contact", "readyprecontact" },
                         { "Run the Starter", "runinertialstarter" },
                         { "Run Starter", "runinertialstarter" },
                     };

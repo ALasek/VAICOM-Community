@@ -239,6 +239,8 @@ namespace VAICOM
                 { "Breakaway",              "abortrefuel"           },
                 { "Returning Observation",  "abortrefuel"           },
                 { "Ready Precontact",       "readyprecontact"       },
+                { "Ready Pre Contact",      "readyprecontact"       },
+                { "Pre Contact",            "readyprecontact"       },
                 { "Astern Centre",          "readyprecontact"       },
                 { "Astern Left",            "readyprecontact"       },
                 { "Astern Right",           "readyprecontact"       },
